@@ -5,6 +5,7 @@ import { ChevronRight, AlertTriangle } from "lucide-react";
 import { db, schema } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
 import { QuestionDialog } from "@/components/admin/QuestionDialog";
+import { QuizAdminTabs } from "@/components/admin/QuizAdminTabs";
 import { TogglePublishButton } from "@/components/admin/TogglePublishButton";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { MathContent } from "@/components/math/MathRenderer";
@@ -77,6 +78,8 @@ export default async function AdminUnitQuestionsPage({
         </div>
         <QuestionDialog unitId={unit.id} />
       </header>
+
+      <QuizAdminTabs unitId={unit.id} active="questions" />
 
       {rows.length === 0 ? (
         <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--border-default)] p-10 text-center text-sm text-[var(--text-muted)]">

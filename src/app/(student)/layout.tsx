@@ -9,6 +9,7 @@ import { logoutAction } from "@/lib/auth/logout";
 
 const navLinks = [
   { href: "/dashboard", label: "لوحتي" },
+  { href: "/files", label: "الملازم" },
   { href: "/bookmarks", label: "المحفوظات" },
   { href: "/history", label: "سجلّ الاختبارات" },
   { href: "/announcements", label: "الإعلانات" },
@@ -69,7 +70,9 @@ export default async function StudentLayout({ children }: { children: React.Reac
       </header>
 
       <main className="flex-1">
-        <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">{children}</div>
+        <div key="student-page" className="romi-page-in mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+          {children}
+        </div>
       </main>
 
       <SiteFooter />

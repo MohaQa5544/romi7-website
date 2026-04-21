@@ -95,7 +95,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
 
         <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8 md:px-8">
-          <div className="mx-auto w-full max-w-6xl">{children}</div>
+          <div className="romi-page-in mx-auto w-full max-w-6xl">{children}</div>
         </main>
       </div>
     </div>
