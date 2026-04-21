@@ -58,3 +58,5 @@ public/fallback-*.js
 .idea
 .vscode
 Thumbs.db
+
+.vercel
