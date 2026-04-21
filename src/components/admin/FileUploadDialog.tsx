@@ -14,7 +14,7 @@ const TYPE_OPTIONS = [
   { value: "exam_solution", label: "حل الاختبارات" },
 ];
 
-const MAX_BYTES = 25 * 1024 * 1024;
+const MAX_BYTES = 50 * 1024 * 1024;
 
 export function FileUploadDialog({ units }: Props) {
   const [open, setOpen] = useState(false);
@@ -43,7 +43,7 @@ export function FileUploadDialog({ units }: Props) {
       return;
     }
     if (file.size > MAX_BYTES) {
-      setError("الحجم الأقصى 25 ميغا");
+      setError("الحجم الأقصى 50 ميغا");
       return;
     }
     if (!file.type.includes("pdf") && !file.name.toLowerCase().endsWith(".pdf")) {
@@ -100,7 +100,7 @@ export function FileUploadDialog({ units }: Props) {
             <form action={handleSubmit} className="space-y-4">
               <label className="block">
                 <span className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">
-                  ملف PDF (الحد الأقصى 25 ميغا)
+                  ملف PDF (الحد الأقصى 50 ميغا)
                 </span>
                 <input
                   type="file"

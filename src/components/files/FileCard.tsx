@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Download, Eye, FileText } from "lucide-react";
 import type { FileRow } from "@/lib/db/schema";
-import { getFileTypeMeta, formatSize, getFileUrl } from "@/lib/files";
+import { getFileTypeMeta, formatSize } from "@/lib/files";
 import { BookmarkButton } from "./BookmarkButton";
 import { PdfPreview } from "./PdfPreview";
 
@@ -16,7 +16,9 @@ type Props = {
 export function FileCard({ file, bookmarked, showBookmark = true }: Props) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const meta = getFileTypeMeta(file.type);
-  const url = getFileUrl(file);
+  // Always stream through our auth proxy — works for both repo and
+  // (private) blob sources. `?preview=1` avoids inflating download count.
+  const previewUrl = `/api/download/${file.id}?preview=1`;
 
   return (
     <>
@@ -69,7 +71,7 @@ export function FileCard({ file, bookmarked, showBookmark = true }: Props) {
       </div>
 
       <PdfPreview
-        src={url}
+        src={previewUrl}
         title={file.titleAr}
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}

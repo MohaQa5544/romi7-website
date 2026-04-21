@@ -99,8 +99,8 @@ export async function uploadFile(fd: FormData): Promise<{ ok: boolean; error?: s
   const file = fd.get("file");
   if (!(file instanceof File)) return { ok: false, error: "اختر ملف PDF" };
   if (file.size === 0) return { ok: false, error: "الملف فارغ" };
-  if (file.size > 25 * 1024 * 1024) {
-    return { ok: false, error: "الحجم الأقصى 25 ميغا" };
+  if (file.size > 50 * 1024 * 1024) {
+    return { ok: false, error: "الحجم الأقصى 50 ميغا" };
   }
   if (!file.name.toLowerCase().endsWith(".pdf") && file.type !== "application/pdf") {
     return { ok: false, error: "ارفع PDF فقط" };
@@ -127,7 +127,7 @@ export async function uploadFile(fd: FormData): Promise<{ ok: boolean; error?: s
     // Sanitize filename: strip path separators, keep basename, random suffix via addRandomSuffix
     const safeName = file.name.replace(/[^\w\u0600-\u06FF.\-]+/g, "_");
     const blob = await put(`admin/${Date.now()}-${safeName}`, file, {
-      access: "public",
+      access: "private",
       contentType: "application/pdf",
       addRandomSuffix: true,
     });
