@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { del } from "@vercel/blob";
+import { del, put } from "@vercel/blob";
 import { db, schema } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
 
@@ -85,6 +85,73 @@ export async function registerUploadedFile(
   revalidatePath("/admin/files");
   revalidatePath(`/unit/${d.unitId}`);
   return { ok: true };
+}
+
+/**
+ * Direct server-action upload: accepts the file in FormData, streams it
+ * straight to Vercel Blob, and inserts the DB row. Replaces the previous
+ * client-upload + webhook flow which was unreliable. Capped at 25MB via
+ * next.config `serverActions.bodySizeLimit`.
+ */
+export async function uploadFile(fd: FormData): Promise<{ ok: boolean; error?: string }> {
+  const session = await requireAdmin();
+
+  const file = fd.get("file");
+  if (!(file instanceof File)) return { ok: false, error: "اختر ملف PDF" };
+  if (file.size === 0) return { ok: false, error: "الملف فارغ" };
+  if (file.size > 25 * 1024 * 1024) {
+    return { ok: false, error: "الحجم الأقصى 25 ميغا" };
+  }
+  if (!file.name.toLowerCase().endsWith(".pdf") && file.type !== "application/pdf") {
+    return { ok: false, error: "ارفع PDF فقط" };
+  }
+
+  const unitId = String(fd.get("unitId") ?? "");
+  const titleAr = String(fd.get("titleAr") ?? "").trim();
+  const type = String(fd.get("type") ?? "");
+  const examNumberRaw = String(fd.get("examNumber") ?? "").trim();
+
+  const parsed = uploadedInput.safeParse({
+    unitId,
+    titleAr,
+    type,
+    examNumber: examNumberRaw || null,
+    blobUrl: "https://placeholder/x.pdf", // replaced after put()
+    sizeBytes: file.size,
+  });
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "بيانات غير صحيحة" };
+  }
+
+  try {
+    // Sanitize filename: strip path separators, keep basename, random suffix via addRandomSuffix
+    const safeName = file.name.replace(/[^\w\u0600-\u06FF.\-]+/g, "_");
+    const blob = await put(`admin/${Date.now()}-${safeName}`, file, {
+      access: "public",
+      contentType: "application/pdf",
+      addRandomSuffix: true,
+    });
+
+    const d = parsed.data;
+    await db.insert(schema.files).values({
+      unitId: d.unitId,
+      titleAr: d.titleAr,
+      type: d.type,
+      examNumber: d.examNumber ?? undefined,
+      source: "blob",
+      path: blob.url,
+      sizeBytes: file.size,
+      uploadedBy: session.user.id,
+    });
+
+    revalidatePath("/admin/files");
+    revalidatePath(`/unit/${d.unitId}`);
+    return { ok: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "فشل الرفع";
+    console.error("uploadFile failed:", err);
+    return { ok: false, error: `فشل الرفع: ${message}` };
+  }
 }
 
 export async function toggleFilePublished(id: string): Promise<void> {

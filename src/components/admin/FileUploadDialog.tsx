@@ -2,8 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { Upload, X, Loader2 } from "lucide-react";
-import { upload } from "@vercel/blob/client";
-import { registerUploadedFile } from "@/lib/admin/files-actions";
+import { uploadFile } from "@/lib/admin/files-actions";
 import type { Unit } from "@/lib/db/schema";
 
 type Props = { units: Unit[] };
@@ -15,10 +14,11 @@ const TYPE_OPTIONS = [
   { value: "exam_solution", label: "حل الاختبارات" },
 ];
 
+const MAX_BYTES = 25 * 1024 * 1024;
+
 export function FileUploadDialog({ units }: Props) {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
@@ -32,47 +32,32 @@ export function FileUploadDialog({ units }: Props) {
 
   function reset() {
     setFile(null);
-    setProgress(0);
     setError(null);
   }
 
-  async function handleSubmit(fd: FormData) {
+  function handleSubmit(fd: FormData) {
     setError(null);
-    const unitId = String(fd.get("unitId") ?? "");
-    const titleAr = String(fd.get("titleAr") ?? "").trim();
-    const type = String(fd.get("type") ?? "") as
-      | "question_bank" | "answer_key" | "exam" | "exam_solution";
-    const examNumberRaw = String(fd.get("examNumber") ?? "").trim();
-    const examNumber = examNumberRaw ? Number(examNumberRaw) : null;
 
     if (!file) {
       setError("اختر ملف PDF أولاً");
       return;
     }
-    if (!unitId || !titleAr) {
-      setError("العنوان والوحدة مطلوبان");
+    if (file.size > MAX_BYTES) {
+      setError("الحجم الأقصى 25 ميغا");
+      return;
+    }
+    if (!file.type.includes("pdf") && !file.name.toLowerCase().endsWith(".pdf")) {
+      setError("يجب أن يكون PDF");
       return;
     }
 
+    fd.set("file", file);
+
     start(async () => {
       try {
-        const blob = await upload(`admin/${Date.now()}-${file.name}`, file, {
-          access: "public",
-          handleUploadUrl: "/api/admin/blob-upload",
-          contentType: "application/pdf",
-          onUploadProgress: (p) => setProgress(Math.round(p.percentage)),
-        });
-
-        const result = await registerUploadedFile({
-          unitId,
-          titleAr,
-          type,
-          examNumber,
-          blobUrl: blob.url,
-          sizeBytes: file.size,
-        });
+        const result = await uploadFile(fd);
         if (!result.ok) {
-          setError(result.error ?? "فشل الحفظ");
+          setError(result.error ?? "فشل الرفع");
           return;
         }
         setOpen(false);
@@ -115,12 +100,16 @@ export function FileUploadDialog({ units }: Props) {
             <form action={handleSubmit} className="space-y-4">
               <label className="block">
                 <span className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">
-                  ملف PDF
+                  ملف PDF (الحد الأقصى 25 ميغا)
                 </span>
                 <input
                   type="file"
-                  accept="application/pdf"
-                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  accept="application/pdf,.pdf"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0] ?? null;
+                    setFile(f);
+                    setError(null);
+                  }}
                   className="block w-full cursor-pointer rounded-[var(--radius-default)] border border-dashed border-[var(--border-default)] bg-[var(--surface-1)] p-3 text-sm text-[var(--text-secondary)] file:me-3 file:rounded-[var(--radius-default)] file:border-0 file:bg-[var(--romi-navy)] file:px-3 file:py-1.5 file:text-white hover:border-[var(--romi-gold)]"
                 />
                 {file && (
@@ -147,25 +136,17 @@ export function FileUploadDialog({ units }: Props) {
                   label="النوع"
                   name="type"
                   type="select"
-                  defaultValue="exam"
+                  defaultValue="question_bank"
                   options={TYPE_OPTIONS}
                 />
               </div>
 
               <Field label="رقم الاختبار (اختياري)" name="examNumber" type="number" />
 
-              {progress > 0 && progress < 100 && (
-                <div className="space-y-1">
-                  <div className="flex justify-between text-[11px] text-[var(--text-muted)]">
-                    <span>جاري الرفع…</span>
-                    <span>{progress}٪</span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-2)]">
-                    <div
-                      style={{ width: `${progress}%` }}
-                      className="h-full bg-[var(--romi-gold)] transition-all"
-                    />
-                  </div>
+              {pending && (
+                <div className="flex items-center gap-2 rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-1)] px-3 py-2.5 text-xs text-[var(--text-secondary)]">
+                  <Loader2 size={14} className="animate-spin text-[var(--romi-gold-dark)]" />
+                  جاري رفع الملف وحفظه…
                 </div>
               )}
 
@@ -184,7 +165,7 @@ export function FileUploadDialog({ units }: Props) {
                 >
                   إلغاء
                 </button>
-                <button type="submit" disabled={pending} className="btn-gold text-sm">
+                <button type="submit" disabled={pending || !file} className="btn-gold text-sm">
                   {pending && <Loader2 size={14} className="me-1.5 inline animate-spin" />}
                   رفع وحفظ
                 </button>
