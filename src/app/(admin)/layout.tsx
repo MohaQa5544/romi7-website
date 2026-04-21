@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogOut, LayoutDashboard, Users, FileText, BookOpen, Megaphone, Settings } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, FileText, BookOpen, Megaphone, ClipboardCheck } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
@@ -12,8 +12,8 @@ const navItems = [
   { href: "/admin/students", label: "الطلّاب", icon: Users, exact: false },
   { href: "/admin/units", label: "الوحدات", icon: BookOpen, exact: false },
   { href: "/admin/files", label: "الملفات", icon: FileText, exact: false },
+  { href: "/admin/quizzes", label: "الاختبارات", icon: ClipboardCheck, exact: false },
   { href: "/admin/announcements", label: "الإعلانات", icon: Megaphone, exact: false },
-  { href: "/admin/settings", label: "الإعدادات", icon: Settings, exact: false },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

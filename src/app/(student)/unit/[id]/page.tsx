@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, asc, eq, inArray } from "drizzle-orm";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, PlayCircle } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { db, schema } from "@/lib/db";
 import { FileTabs } from "@/components/files/FileTabs";
@@ -83,6 +83,13 @@ export default async function UnitPage({
             <p className="text-sm text-[var(--text-secondary)]">{unit.description}</p>
           )}
         </div>
+        <Link
+          href={`/quiz/${unit.id}`}
+          className="btn-gold inline-flex items-center gap-2 self-start text-sm sm:self-center"
+        >
+          <PlayCircle size={16} />
+          اختبار تفاعلي
+        </Link>
       </header>
 
       <section>

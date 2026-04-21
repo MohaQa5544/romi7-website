@@ -33,7 +33,7 @@
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.36.4",
     "framer-motion": "^11.15.0",
-    "katex": "^0.16.11",
+    "katex": "^0.16.45",
     "lucide-react": "^0.468.0",
     "next": "^15.5.15",
     "next-auth": "5.0.0-beta.25",
@@ -51,7 +51,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
     "@types/bcryptjs": "^2.4.6",
-    "@types/katex": "^0.16.7",
+    "@types/katex": "^0.16.8",
     "@types/node": "^22.10.2",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
