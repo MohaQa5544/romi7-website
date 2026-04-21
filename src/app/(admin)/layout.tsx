@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogOut, LayoutDashboard, Users, FileText, BookOpen, Megaphone, ClipboardCheck } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, FileText, BookOpen, Megaphone, ClipboardCheck, ArrowLeft } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
@@ -64,17 +64,36 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Logo size={36} href="/admin" />
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Desktop: full text link */}
             <Link
               href="/dashboard"
               className="hidden text-xs font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] sm:inline"
             >
               ← عودة إلى الموقع
             </Link>
+            {/* Mobile: icon-only back button */}
+            <Link
+              href="/dashboard"
+              aria-label="عودة إلى الموقع"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)] sm:hidden"
+            >
+              <ArrowLeft size={18} />
+            </Link>
             <ThemeToggle />
             <span className="hidden text-sm text-[var(--text-secondary)] sm:inline">
               {session.user.name}
             </span>
+            {/* Mobile: logout icon button (desktop has it in sidebar) */}
+            <form action={logoutAction} className="md:hidden">
+              <button
+                type="submit"
+                aria-label="تسجيل الخروج"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--danger)]"
+              >
+                <LogOut size={18} />
+              </button>
+            </form>
           </div>
         </header>
 

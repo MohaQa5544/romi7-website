@@ -1,10 +1,7 @@
-feat: add review file type, admin header logo, live math preview
+fix(admin): add mobile back-to-site and logout buttons
 
-- Add "مراجعة" (review) as a 5th file type across schema, zod,
-  upload dialog, file tabs, and page-level type casts. No seed rows.
-- Show "رميح في الرياضيات" logo in the admin desktop header
-  (previously only visible on mobile).
-- QuestionDialog: replace the "تحرير/معاينة" toggle with an
-  always-visible rendered math preview below the question textarea,
-  plus an inline preview under any option that contains $...$.
-  Toolbar insertions are now shown in their natural rendered form.
+On mobile the admin sidebar is hidden, which also hid the logout
+button, and the "back to site" link was sm:inline (hidden below
+640px). Added icon-only back and logout buttons to the header on
+mobile so admins can exit the dashboard without rotating their
+phone.
