@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Loader2, Plus, Edit3, X, Trash2 } from "lucide-react";
 import { saveQuestion, type QuestionFormState } from "@/lib/admin/questions-actions";
 import { MathContent } from "@/components/math/MathRenderer";
+import { MathToolbar, insertAtCursor } from "@/components/math/MathToolbar";
 
 type OptionRow = { id?: string; text: string; isCorrect?: boolean };
 
@@ -49,6 +50,49 @@ export function QuestionDialog({ unitId, question, trigger = "button" }: Props) 
     saveQuestion,
     null,
   );
+
+  // Track which input the toolbar should insert into
+  const questionRef = useRef<HTMLTextAreaElement | null>(null);
+  const optionRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [focusTarget, setFocusTarget] = useState<
+    { kind: "question" } | { kind: "option"; idx: number }
+  >({ kind: "question" });
+
+  function applyInsert(insert: string, math: boolean) {
+    if (focusTarget.kind === "question") {
+      const ta = questionRef.current;
+      if (!ta) return;
+      const { newValue, newCaret } = insertAtCursor(ta, insert, text, math);
+      setText(newValue);
+      requestAnimationFrame(() => {
+        ta.focus();
+        ta.setSelectionRange(newCaret, newCaret);
+      });
+    } else {
+      const idx = focusTarget.idx;
+      const input = optionRefs.current[idx];
+      if (!input) return;
+      const currentValue = options[idx]?.text ?? "";
+      // reuse insertAtCursor with input-like textarea (selectionStart works on inputs too)
+      const start = input.selectionStart ?? currentValue.length;
+      const end = input.selectionEnd ?? currentValue.length;
+      const before = currentValue.slice(0, start);
+      const dollarCount = (before.match(/\$/g) ?? []).length;
+      const insideMath = dollarCount % 2 === 1;
+      const wrapped = math && !insideMath ? `$${insert}$` : insert;
+      const caretMarker = wrapped.indexOf("|");
+      const cleaned = wrapped.replace("|", "");
+      const newValue = currentValue.slice(0, start) + cleaned + currentValue.slice(end);
+      const newCaret = start + (caretMarker >= 0 ? caretMarker : cleaned.length);
+      setOptions((prev) =>
+        prev.map((x, i) => (i === idx ? { ...x, text: newValue } : x)),
+      );
+      requestAnimationFrame(() => {
+        input.focus();
+        input.setSelectionRange(newCaret, newCaret);
+      });
+    }
+  }
 
   useEffect(() => {
     if (state?.ok) {
@@ -152,9 +196,11 @@ export function QuestionDialog({ unitId, question, trigger = "button" }: Props) 
                   </div>
                 ) : (
                   <textarea
+                    ref={questionRef}
                     name="questionText"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
+                    onFocus={() => setFocusTarget({ kind: "question" })}
                     rows={4}
                     dir="auto"
                     className="block w-full rounded-[var(--radius-default)] border-[1.5px] border-[var(--border-default)] bg-[var(--surface-0)] px-3 py-2 text-sm outline-none focus:border-[var(--romi-gold)]"
@@ -163,6 +209,10 @@ export function QuestionDialog({ unitId, question, trigger = "button" }: Props) 
                   />
                 )}
               </div>
+
+              {!preview && (
+                <MathToolbar onInsert={applyInsert} />
+              )}
 
               <div className="space-y-2">
                 <label className="block text-xs font-medium text-[var(--text-secondary)]">
@@ -180,6 +230,9 @@ export function QuestionDialog({ unitId, question, trigger = "button" }: Props) 
                     />
                     {o.id && <input type="hidden" name={`option_${i}_id`} value={o.id} />}
                     <input
+                      ref={(el) => {
+                        optionRefs.current[i] = el;
+                      }}
                       name={`option_${i}`}
                       value={o.text}
                       onChange={(e) =>
@@ -187,6 +240,7 @@ export function QuestionDialog({ unitId, question, trigger = "button" }: Props) 
                           prev.map((x, idx) => (idx === i ? { ...x, text: e.target.value } : x)),
                         )
                       }
+                      onFocus={() => setFocusTarget({ kind: "option", idx: i })}
                       dir="auto"
                       placeholder={`الخيار ${i + 1}`}
                       className={`block flex-1 rounded-[var(--radius-default)] border-[1.5px] bg-[var(--surface-0)] px-3 py-1.5 text-sm outline-none focus:border-[var(--romi-gold)] ${
