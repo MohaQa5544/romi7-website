@@ -1,0 +1,200 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --romi-navy: #0A1A4A;
+  --romi-navy-light: #152258;
+  --romi-navy-dark: #050E2E;
+
+  --romi-gold: #F5C518;
+  --romi-gold-light: #FFD84D;
+  --romi-gold-dark: #D4A500;
+
+  --romi-red: #E63946;
+
+  --surface-0: #FFFFFF;
+  --surface-1: #F7F8FB;
+  --surface-2: #EEF1F7;
+
+  --text-primary: #0A1A4A;
+  --text-secondary: #4A5578;
+  --text-muted: #8892B0;
+
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #3B82F6;
+
+  --border-subtle: rgba(10, 26, 74, 0.08);
+  --border-default: rgba(10, 26, 74, 0.15);
+
+  --radius: 0.75rem;
+
+  --shadow-card: 0 1px 2px rgba(10, 26, 74, 0.04), 0 4px 12px rgba(10, 26, 74, 0.04);
+  --shadow-card-hover: 0 2px 4px rgba(10, 26, 74, 0.06), 0 12px 24px rgba(10, 26, 74, 0.08);
+}
+
+.dark {
+  --surface-0: #050E2E;
+  --surface-1: #0A1A4A;
+  --surface-2: #152258;
+  --text-primary: #F0F3FA;
+  --text-secondary: #BCC5DC;
+  --text-muted: #7A84A0;
+  --border-subtle: rgba(245, 197, 24, 0.08);
+  --border-default: rgba(245, 197, 24, 0.18);
+}
+
+@theme inline {
+  --color-background: var(--surface-0);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--text-primary);
+  --color-muted: var(--text-muted);
+  --color-secondary: var(--text-secondary);
+
+  --color-navy: var(--romi-navy);
+  --color-navy-light: var(--romi-navy-light);
+  --color-navy-dark: var(--romi-navy-dark);
+
+  --color-gold: var(--romi-gold);
+  --color-gold-light: var(--romi-gold-light);
+  --color-gold-dark: var(--romi-gold-dark);
+
+  --color-brand-red: var(--romi-red);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+
+  --radius-default: var(--radius);
+
+  --font-display: var(--font-readex), "Readex Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-ibm-arabic), "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-latin: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  border-color: var(--border-subtle);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-family: var(--font-ibm-arabic), "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "kern";
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 200ms ease-out, color 200ms ease-out;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-readex), "Readex Pro", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.font-latin, code, kbd, pre, samp {
+  font-family: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--romi-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--romi-gold) 0%, var(--romi-gold-dark) 100%);
+  color: var(--romi-navy);
+  font-weight: 700;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.5rem;
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out, filter 150ms ease-out;
+  box-shadow: 0 2px 8px rgba(245, 197, 24, 0.25);
+}
+.btn-gold:hover {
+  filter: brightness(1.04);
+  box-shadow: 0 4px 16px rgba(245, 197, 24, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-navy {
+  background: var(--romi-navy);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.5rem;
+  transition: background-color 150ms ease-out, transform 150ms ease-out;
+}
+.btn-navy:hover {
+  background: var(--romi-navy-light);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius);
+  padding: calc(0.75rem - 1.5px) calc(1.5rem - 1.5px);
+  transition: background-color 150ms ease-out, border-color 150ms ease-out;
+}
+.btn-outline:hover {
+  background: var(--surface-1);
+  border-color: var(--romi-gold);
+}
+
+.card {
+  background: var(--surface-0);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 200ms ease-out, transform 200ms ease-out;
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-accent-top {
+  position: relative;
+}
+.card-accent-top::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--romi-gold-dark), var(--romi-gold), var(--romi-gold-light));
+  border-start-start-radius: var(--radius);
+  border-start-end-radius: var(--radius);
+}
+
+.hero-navy {
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(245, 197, 24, 0.18), transparent 60%),
+    radial-gradient(900px 500px at 10% 110%, rgba(245, 197, 24, 0.10), transparent 60%),
+    linear-gradient(180deg, var(--romi-navy-dark) 0%, var(--romi-navy) 60%, var(--romi-navy-light) 100%);
+  color: #FFFFFF;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--romi-gold-light), var(--romi-gold), var(--romi-gold-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+::selection {
+  background: var(--romi-gold);
+  color: var(--romi-navy);
+}
