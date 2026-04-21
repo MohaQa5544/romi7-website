@@ -6,7 +6,7 @@ import { db, schema } from "./index";
 
 type FileSpec = {
   titleAr: string;
-  type: "question_bank" | "answer_key" | "exam" | "exam_solution" | "summary" | "update" | "other";
+  type: "question_bank" | "answer_key" | "exam" | "exam_solution";
   path: string;
   examNumber?: number;
 };
@@ -29,7 +29,7 @@ const UNIT_SPECS: UnitSpec[] = [
     iconKey: "integral",
     files: [
       { titleAr: "حل وحدة التكامل — رميح 2026", type: "answer_key", path: "/pdfs/semester-2/unit-4-integration/answers.pdf" },
-      { titleAr: "تحديث 04 — التكامل 2026", type: "update", path: "/pdfs/semester-2/unit-4-integration/update-04.pdf" },
+      { titleAr: "تحديث 04 — التكامل 2026", type: "question_bank", path: "/pdfs/semester-2/unit-4-integration/update-04.pdf" },
       { titleAr: "اختبار التكامل (1)", type: "exam", examNumber: 1, path: "/pdfs/semester-2/unit-4-integration/exam-1.pdf" },
       { titleAr: "اختبار التكامل (2)", type: "exam", examNumber: 2, path: "/pdfs/semester-2/unit-4-integration/exam-2.pdf" },
       { titleAr: "اختبار التكامل (3)", type: "exam", examNumber: 3, path: "/pdfs/semester-2/unit-4-integration/exam-3.pdf" },

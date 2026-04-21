@@ -3,7 +3,7 @@ import { FileText, Search } from "lucide-react";
 import Link from "next/link";
 import { db, schema } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
-import { FILE_TYPE_META, formatSize } from "@/lib/files";
+import { FILE_TYPE_META, formatSize, getFileTypeMeta } from "@/lib/files";
 import { FileUploadDialog } from "@/components/admin/FileUploadDialog";
 import { TogglePublishButton } from "@/components/admin/TogglePublishButton";
 import { DeleteButton } from "@/components/admin/DeleteButton";
@@ -31,14 +31,7 @@ export default async function AdminFilesPage({
     conditions.push(
       eq(
         schema.files.type,
-        type as
-          | "question_bank"
-          | "answer_key"
-          | "exam"
-          | "exam_solution"
-          | "summary"
-          | "update"
-          | "other",
+        type as "question_bank" | "answer_key" | "exam" | "exam_solution",
       ),
     );
 
@@ -168,7 +161,7 @@ export default async function AdminFilesPage({
             </thead>
             <tbody className="divide-y divide-[var(--border-subtle)]">
               {rows.map((f) => {
-                const meta = FILE_TYPE_META[f.type];
+                const meta = getFileTypeMeta(f.type);
                 return (
                   <tr key={f.id} className="hover:bg-[var(--surface-1)]">
                     <td className="px-4 py-2.5">

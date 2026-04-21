@@ -7,48 +7,44 @@ export function getFileUrl(file: Pick<FileRow, "source" | "path">): string {
   return file.path.startsWith("/") ? file.path : `/${file.path}`;
 }
 
-export type FileType = FileRow["type"];
+export type FileType = "question_bank" | "answer_key" | "exam" | "exam_solution";
 
-export const FILE_TYPE_META: Record<
-  FileType,
-  { labelAr: string; tab: "papers" | "exams" | "answers" | "other"; toneClass: string }
-> = {
+type FileTypeMeta = {
+  labelAr: string;
+  tab: "bank" | "exams";
+  toneClass: string;
+};
+
+export const FILE_TYPE_META: Record<FileType, FileTypeMeta> = {
   question_bank: {
-    labelAr: "بنك أسئلة",
-    tab: "papers",
+    labelAr: "بنك الأسئلة",
+    tab: "bank",
     toneClass: "bg-[color-mix(in_oklab,var(--info)_14%,transparent)] text-[var(--info)]",
   },
-  summary: {
-    labelAr: "ملخص",
-    tab: "papers",
-    toneClass: "bg-[color-mix(in_oklab,var(--romi-navy)_14%,transparent)] text-[var(--romi-navy)]",
-  },
-  update: {
-    labelAr: "تحديث",
-    tab: "papers",
-    toneClass: "bg-[color-mix(in_oklab,var(--warning)_20%,transparent)] text-[var(--warning)]",
+  answer_key: {
+    labelAr: "حل بنك الأسئلة",
+    tab: "bank",
+    toneClass: "bg-[color-mix(in_oklab,var(--success)_18%,transparent)] text-[var(--success)]",
   },
   exam: {
-    labelAr: "اختبار",
+    labelAr: "الاختبارات",
     tab: "exams",
     toneClass: "bg-[color-mix(in_oklab,var(--danger)_14%,transparent)] text-[var(--danger)]",
   },
   exam_solution: {
-    labelAr: "حل اختبار",
+    labelAr: "حل الاختبارات",
     tab: "exams",
     toneClass: "bg-[color-mix(in_oklab,#8B5CF6_18%,transparent)] text-[#7C3AED]",
   },
-  answer_key: {
-    labelAr: "مفتاح الإجابات",
-    tab: "answers",
-    toneClass: "bg-[color-mix(in_oklab,var(--success)_18%,transparent)] text-[var(--success)]",
-  },
-  other: {
-    labelAr: "ملف",
-    tab: "other",
-    toneClass: "bg-[var(--surface-2)] text-[var(--text-secondary)]",
-  },
 };
+
+/** Legacy types (summary/update/other) that may still exist in the DB
+ * before migration. Defensively map them to question_bank for display. */
+const LEGACY_FALLBACK: FileTypeMeta = FILE_TYPE_META.question_bank;
+
+export function getFileTypeMeta(type: string): FileTypeMeta {
+  return (FILE_TYPE_META as Record<string, FileTypeMeta>)[type] ?? LEGACY_FALLBACK;
+}
 
 export function formatSize(bytes: number | null | undefined): string {
   if (!bytes || bytes < 1024) return `${bytes ?? 0} B`;

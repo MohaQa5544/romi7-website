@@ -2,15 +2,14 @@
 
 import { useState } from "react";
 import type { FileRow } from "@/lib/db/schema";
-import { FILE_TYPE_META } from "@/lib/files";
+import { getFileTypeMeta } from "@/lib/files";
 import { FileCard } from "./FileCard";
 
-type Tab = "papers" | "exams" | "answers";
+type Tab = "bank" | "exams";
 
 const TAB_LABEL: Record<Tab, string> = {
-  papers: "الأوراق",
+  bank: "بنك الأسئلة",
   exams: "الاختبارات",
-  answers: "مفاتيح الإجابات",
 };
 
 type Props = {
@@ -19,17 +18,16 @@ type Props = {
 };
 
 export function FileTabs({ files, bookmarkedIds }: Props) {
-  const grouped: Record<Tab, FileRow[]> = { papers: [], exams: [], answers: [] };
+  const grouped: Record<Tab, FileRow[]> = { bank: [], exams: [] };
   for (const f of files) {
-    const tab = FILE_TYPE_META[f.type].tab;
-    if (tab === "other") grouped.papers.push(f);
-    else grouped[tab].push(f);
+    const tab = getFileTypeMeta(f.type).tab;
+    grouped[tab].push(f);
   }
 
-  const availableTabs: Tab[] = (["papers", "exams", "answers"] as Tab[]).filter(
+  const availableTabs: Tab[] = (["bank", "exams"] as Tab[]).filter(
     (t) => grouped[t].length > 0,
   );
-  const [active, setActive] = useState<Tab>(availableTabs[0] ?? "papers");
+  const [active, setActive] = useState<Tab>(availableTabs[0] ?? "bank");
 
   if (availableTabs.length === 0) {
     return (

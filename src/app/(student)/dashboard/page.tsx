@@ -4,7 +4,7 @@ import { BookOpen, Bookmark, Clock, FileStack, History, Megaphone, Search } from
 import { auth } from "@/lib/auth/config";
 import { db, schema } from "@/lib/db";
 import { UnitCard } from "@/components/units/UnitCard";
-import { FILE_TYPE_META } from "@/lib/files";
+import { getFileTypeMeta } from "@/lib/files";
 import { AnnouncementBanner } from "@/components/announcements/AnnouncementBanner";
 import { formatDateAr } from "@/lib/announcements";
 
@@ -155,7 +155,7 @@ export default async function DashboardPage() {
           </h2>
           <ul className="divide-y divide-[var(--border-subtle)] rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)]">
             {recentFiles.map((f) => {
-              const meta = FILE_TYPE_META[f.type];
+              const meta = getFileTypeMeta(f.type);
               return (
                 <li key={f.id}>
                   <Link

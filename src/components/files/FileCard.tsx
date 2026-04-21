@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Download, Eye, FileText } from "lucide-react";
 import type { FileRow } from "@/lib/db/schema";
-import { FILE_TYPE_META, formatSize, getFileUrl } from "@/lib/files";
+import { getFileTypeMeta, formatSize, getFileUrl } from "@/lib/files";
 import { BookmarkButton } from "./BookmarkButton";
 import { PdfPreview } from "./PdfPreview";
 
@@ -15,7 +15,7 @@ type Props = {
 
 export function FileCard({ file, bookmarked, showBookmark = true }: Props) {
   const [previewOpen, setPreviewOpen] = useState(false);
-  const meta = FILE_TYPE_META[file.type];
+  const meta = getFileTypeMeta(file.type);
   const url = getFileUrl(file);
 
   return (

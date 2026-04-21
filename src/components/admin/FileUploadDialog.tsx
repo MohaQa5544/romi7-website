@@ -9,13 +9,10 @@ import type { Unit } from "@/lib/db/schema";
 type Props = { units: Unit[] };
 
 const TYPE_OPTIONS = [
-  { value: "question_bank", label: "بنك أسئلة" },
-  { value: "answer_key", label: "مفتاح إجابات" },
-  { value: "exam", label: "اختبار" },
-  { value: "exam_solution", label: "حلّ اختبار" },
-  { value: "summary", label: "ملخّص" },
-  { value: "update", label: "تحديث" },
-  { value: "other", label: "أخرى" },
+  { value: "question_bank", label: "بنك الأسئلة" },
+  { value: "answer_key", label: "حل بنك الأسئلة" },
+  { value: "exam", label: "الاختبارات" },
+  { value: "exam_solution", label: "حل الاختبارات" },
 ];
 
 export function FileUploadDialog({ units }: Props) {
@@ -44,7 +41,7 @@ export function FileUploadDialog({ units }: Props) {
     const unitId = String(fd.get("unitId") ?? "");
     const titleAr = String(fd.get("titleAr") ?? "").trim();
     const type = String(fd.get("type") ?? "") as
-      | "question_bank" | "answer_key" | "exam" | "exam_solution" | "summary" | "update" | "other";
+      | "question_bank" | "answer_key" | "exam" | "exam_solution";
     const examNumberRaw = String(fd.get("examNumber") ?? "").trim();
     const examNumber = examNumberRaw ? Number(examNumberRaw) : null;
 
