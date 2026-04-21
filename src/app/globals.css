@@ -7,29 +7,30 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Default subtle transition for interactive surfaces */
-a,
-button,
-[role="button"],
-input,
-select,
-textarea {
-  transition:
-    color 180ms ease-out,
-    background-color 180ms ease-out,
-    border-color 180ms ease-out,
-    transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 180ms ease-out,
-    opacity 180ms ease-out;
+/* Default subtle transition for interactive surfaces.
+   Uses html-prefixed selectors so we beat Tailwind's single-class
+   `transition-colors` utility (class = 0,1,0 ; html a = 0,0,2). */
+html a,
+html button,
+html [role="button"],
+html input,
+html select,
+html textarea,
+html summary,
+html label[for] {
+  transition-property: color, background-color, border-color, transform, box-shadow, opacity, filter;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Tappable: tiny scale on mobile tap */
-@media (hover: none) {
-  a:active,
-  button:active,
-  [role="button"]:active {
-    transform: scale(0.98);
-  }
+/* Press/tap: subtle scale on every click, not just touch devices */
+html a:active,
+html button:not(:disabled):active,
+html [role="button"]:not([aria-disabled="true"]):active,
+html summary:active,
+html label[for]:active {
+  transform: scale(0.97);
+  transition-duration: 80ms;
 }
 
 /* Respect reduced motion */

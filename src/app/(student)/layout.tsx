@@ -69,6 +69,21 @@ export default async function StudentLayout({ children }: { children: React.Reac
         </div>
       </header>
 
+      {/* Mobile nav — links are hidden in md:flex top bar, surface here */}
+      <nav className="border-b border-[var(--border-subtle)] bg-[var(--surface-0)] md:hidden">
+        <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-2 py-2">
+          {navLinks.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="shrink-0 rounded-[var(--radius-default)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+            >
+              {l.label}
+            </Link>
+          ))}
+        </div>
+      </nav>
+
       <main className="flex-1">
         <div key="student-page" className="romi-page-in mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
           {children}

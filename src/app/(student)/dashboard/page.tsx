@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { and, count, desc, eq, isNotNull, sql } from "drizzle-orm";
-import { BookOpen, Bookmark, Clock, FileStack, History, Megaphone } from "lucide-react";
+import { BookOpen, Bookmark, Clock, FileStack, History, Megaphone, Search } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { db, schema } from "@/lib/db";
 import { UnitCard } from "@/components/units/UnitCard";
@@ -187,7 +187,33 @@ export default async function DashboardPage() {
         </section>
       )}
 
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      {/* Prominent search entry-point to /files */}
+      <section>
+        <Link
+          href="/files"
+          className="group relative flex flex-col gap-3 overflow-hidden rounded-[var(--radius-lg)] border border-[var(--romi-gold)]/30 bg-gradient-to-bl from-[color-mix(in_oklab,var(--romi-gold)_14%,transparent)] to-[var(--surface-0)] p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-default)] bg-[var(--romi-gold)] text-[var(--romi-navy)] shadow-sm">
+              <Search size={20} />
+            </span>
+            <div>
+              <h3 className="font-display text-lg font-bold text-[var(--text-primary)]">
+                ابحث عن ملزمة
+              </h3>
+              <p className="text-xs text-[var(--text-secondary)]">
+                اختر الفصل والوحدة ونوع المحتوى للعثور على ما تحتاج.
+              </p>
+            </div>
+          </div>
+          <span className="inline-flex self-start rounded-full bg-[var(--romi-gold)] px-3 py-1.5 text-xs font-semibold text-[var(--romi-navy)] sm:self-auto">
+            افتح البحث ←
+          </span>
+        </Link>
+      </section>
+
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <QuickLink href="/files" icon={<FileStack size={18} />} label="الملازم" />
         <QuickLink href="/bookmarks" icon={<Bookmark size={18} />} label="المحفوظات" />
         <QuickLink href="/history" icon={<History size={18} />} label="سجلّ الاختبارات" />
         <QuickLink href="/announcements" icon={<Megaphone size={18} />} label="الإعلانات" />
