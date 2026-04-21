@@ -26,9 +26,12 @@ export function MathRenderer({ tex, display = false, className }: Props) {
     }
   }, [tex, display]);
 
+  // Force LTR + bidi-isolation so math renders left-to-right even when embedded in an RTL (Arabic) parent.
   return (
     <span
+      dir="ltr"
       className={className}
+      style={{ unicodeBidi: "isolate", display: display ? "block" : "inline-block" }}
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: html }}
     />

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, Shield } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
@@ -37,6 +37,16 @@ export default async function StudentLayout({ children }: { children: React.Reac
           </nav>
 
           <div className="flex items-center gap-2">
+            {session.user.role === "admin" && (
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 rounded-[var(--radius-default)] border border-[var(--romi-gold)] bg-[color-mix(in_oklab,var(--romi-gold)_12%,transparent)] px-3 py-1.5 text-xs font-medium text-[var(--romi-gold-dark)] transition-colors hover:bg-[color-mix(in_oklab,var(--romi-gold)_20%,transparent)]"
+                aria-label="لوحة الإدارة"
+              >
+                <Shield size={14} />
+                <span className="hidden sm:inline">لوحة الإدارة</span>
+              </Link>
+            )}
             <ThemeToggle />
             <Link
               href="/profile"
