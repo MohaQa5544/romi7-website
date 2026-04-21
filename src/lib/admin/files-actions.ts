@@ -11,7 +11,7 @@ const fileMetaInput = z.object({
   id: z.string().optional(),
   unitId: z.string().min(1, "الوحدة مطلوبة"),
   titleAr: z.string().trim().min(2, "العنوان قصير جداً"),
-  type: z.enum(["question_bank", "answer_key", "exam", "exam_solution"]),
+  type: z.enum(["question_bank", "answer_key", "exam", "exam_solution", "review"]),
   examNumber: z
     .union([z.string(), z.number()])
     .optional()
@@ -57,7 +57,7 @@ export async function saveFileMeta(
 const uploadedInput = z.object({
   unitId: z.string().min(1),
   titleAr: z.string().trim().min(2),
-  type: z.enum(["question_bank", "answer_key", "exam", "exam_solution"]),
+  type: z.enum(["question_bank", "answer_key", "exam", "exam_solution", "review"]),
   examNumber: z.coerce.number().int().optional().nullable(),
   blobUrl: z.string().url(),
   sizeBytes: z.coerce.number().int().optional().nullable(),

@@ -60,8 +60,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-[var(--border-subtle)] bg-[color-mix(in_oklab,var(--surface-0)_90%,transparent)] px-4 backdrop-blur sm:px-6 md:px-8">
-          <div className="flex items-center gap-3 md:hidden">
-            <Logo size={32} />
+          <div className="flex items-center gap-3">
+            <Logo size={36} href="/admin" />
           </div>
 
           <div className="flex items-center gap-3">

@@ -1,0 +1,10 @@
+feat: add review file type, admin header logo, live math preview
+
+- Add "مراجعة" (review) as a 5th file type across schema, zod,
+  upload dialog, file tabs, and page-level type casts. No seed rows.
+- Show "رميح في الرياضيات" logo in the admin desktop header
+  (previously only visible on mobile).
+- QuestionDialog: replace the "تحرير/معاينة" toggle with an
+  always-visible rendered math preview below the question textarea,
+  plus an inline preview under any option that contains $...$.
+  Toolbar insertions are now shown in their natural rendered form.

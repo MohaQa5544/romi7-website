@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { Loader2, Plus, Edit3, X, Trash2 } from "lucide-react";
+import { Loader2, Plus, Edit3, X, Trash2, Eye } from "lucide-react";
 import { saveQuestion, type QuestionFormState } from "@/lib/admin/questions-actions";
 import { MathContent } from "@/components/math/MathRenderer";
 import { MathToolbar, insertAtCursor } from "@/components/math/MathToolbar";
@@ -29,7 +29,6 @@ type Props = {
 export function QuestionDialog({ unitId, question, trigger = "button" }: Props) {
   const isEdit = !!question;
   const [open, setOpen] = useState(false);
-  const [preview, setPreview] = useState(false);
   const [text, setText] = useState(question?.questionText ?? "");
   const [options, setOptions] = useState<OptionRow[]>(
     question
@@ -178,86 +177,85 @@ export function QuestionDialog({ unitId, question, trigger = "button" }: Props) 
               <input type="hidden" name="correctIndex" value={correctIndex} />
 
               <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-medium text-[var(--text-secondary)]">
-                    نصّ السؤال — استخدم $...$ للرياضيات
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setPreview((p) => !p)}
-                    className="text-[11px] text-[var(--romi-navy)] hover:underline"
-                  >
-                    {preview ? "تحرير" : "معاينة"}
-                  </button>
-                </div>
-                {preview ? (
-                  <div className="min-h-20 rounded-[var(--radius-default)] border-[1.5px] border-[var(--border-default)] bg-[var(--surface-1)] p-3 text-sm leading-relaxed">
-                    <MathContent text={text || "—"} />
+                <label className="block text-xs font-medium text-[var(--text-secondary)]">
+                  نصّ السؤال — استخدم $...$ للرياضيات
+                </label>
+                <textarea
+                  ref={questionRef}
+                  name="questionText"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onFocus={() => setFocusTarget({ kind: "question" })}
+                  rows={4}
+                  dir="auto"
+                  className="block w-full rounded-[var(--radius-default)] border-[1.5px] border-[var(--border-default)] bg-[var(--surface-0)] px-3 py-2 text-sm outline-none focus:border-[var(--romi-gold)]"
+                  placeholder="مثال: أوجد قيمة $\int_0^1 x^2\,dx$"
+                  required
+                />
+                <div className="mt-1.5 flex items-start gap-1.5 rounded-[var(--radius-default)] border border-dashed border-[var(--border-default)] bg-[var(--surface-1)] p-2.5 text-sm leading-relaxed">
+                  <Eye size={12} className="mt-1 shrink-0 text-[var(--text-muted)]" />
+                  <div className="flex-1 min-w-0" dir="auto">
+                    <MathContent text={text || "— المعاينة الحيّة تظهر هنا —"} />
                   </div>
-                ) : (
-                  <textarea
-                    ref={questionRef}
-                    name="questionText"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    onFocus={() => setFocusTarget({ kind: "question" })}
-                    rows={4}
-                    dir="auto"
-                    className="block w-full rounded-[var(--radius-default)] border-[1.5px] border-[var(--border-default)] bg-[var(--surface-0)] px-3 py-2 text-sm outline-none focus:border-[var(--romi-gold)]"
-                    placeholder="مثال: أوجد قيمة $\int_0^1 x^2\,dx$"
-                    required
-                  />
-                )}
+                </div>
               </div>
 
-              {!preview && (
-                <MathToolbar onInsert={applyInsert} />
-              )}
+              <MathToolbar onInsert={applyInsert} />
 
               <div className="space-y-2">
                 <label className="block text-xs font-medium text-[var(--text-secondary)]">
                   الخيارات — اختر الإجابة الصحيحة
                 </label>
                 {options.map((o, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="_radio_correct"
-                      checked={correctIndex === i}
-                      onChange={() => setCorrectIndex(i)}
-                      aria-label={`الخيار ${i + 1} صحيح`}
-                      className="h-4 w-4 accent-[var(--romi-gold)]"
-                    />
-                    {o.id && <input type="hidden" name={`option_${i}_id`} value={o.id} />}
-                    <input
-                      ref={(el) => {
-                        optionRefs.current[i] = el;
-                      }}
-                      name={`option_${i}`}
-                      value={o.text}
-                      onChange={(e) =>
-                        setOptions((prev) =>
-                          prev.map((x, idx) => (idx === i ? { ...x, text: e.target.value } : x)),
-                        )
-                      }
-                      onFocus={() => setFocusTarget({ kind: "option", idx: i })}
-                      dir="auto"
-                      placeholder={`الخيار ${i + 1}`}
-                      className={`block flex-1 rounded-[var(--radius-default)] border-[1.5px] bg-[var(--surface-0)] px-3 py-1.5 text-sm outline-none focus:border-[var(--romi-gold)] ${
-                        correctIndex === i
-                          ? "border-[var(--success)]/60"
-                          : "border-[var(--border-default)]"
-                      }`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeOption(i)}
-                      disabled={options.length <= 2}
-                      aria-label="حذف الخيار"
-                      className="rounded-full p-1 text-[var(--text-muted)] hover:text-[var(--danger)] disabled:opacity-40"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                  <div key={i} className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="_radio_correct"
+                        checked={correctIndex === i}
+                        onChange={() => setCorrectIndex(i)}
+                        aria-label={`الخيار ${i + 1} صحيح`}
+                        className="h-4 w-4 accent-[var(--romi-gold)]"
+                      />
+                      {o.id && <input type="hidden" name={`option_${i}_id`} value={o.id} />}
+                      <input
+                        ref={(el) => {
+                          optionRefs.current[i] = el;
+                        }}
+                        name={`option_${i}`}
+                        value={o.text}
+                        onChange={(e) =>
+                          setOptions((prev) =>
+                            prev.map((x, idx) => (idx === i ? { ...x, text: e.target.value } : x)),
+                          )
+                        }
+                        onFocus={() => setFocusTarget({ kind: "option", idx: i })}
+                        dir="auto"
+                        placeholder={`الخيار ${i + 1}`}
+                        className={`block flex-1 rounded-[var(--radius-default)] border-[1.5px] bg-[var(--surface-0)] px-3 py-1.5 text-sm outline-none focus:border-[var(--romi-gold)] ${
+                          correctIndex === i
+                            ? "border-[var(--success)]/60"
+                            : "border-[var(--border-default)]"
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeOption(i)}
+                        disabled={options.length <= 2}
+                        aria-label="حذف الخيار"
+                        className="rounded-full p-1 text-[var(--text-muted)] hover:text-[var(--danger)] disabled:opacity-40"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                    {o.text.includes("$") && (
+                      <div
+                        className="ms-6 rounded-[var(--radius-default)] border border-dashed border-[var(--border-default)] bg-[var(--surface-1)] px-2.5 py-1.5 text-xs leading-relaxed"
+                        dir="auto"
+                      >
+                        <MathContent text={o.text} />
+                      </div>
+                    )}
                   </div>
                 ))}
                 {options.length < 6 && (

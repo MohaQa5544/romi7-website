@@ -12,6 +12,7 @@ const TYPE_OPTIONS = [
   { value: "answer_key", label: "حل بنك الأسئلة" },
   { value: "exam", label: "الاختبارات" },
   { value: "exam_solution", label: "حل الاختبارات" },
+  { value: "review", label: "مراجعة" },
 ];
 
 const MAX_BYTES = 50 * 1024 * 1024;

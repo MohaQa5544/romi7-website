@@ -7,11 +7,16 @@ export function getFileUrl(file: Pick<FileRow, "source" | "path">): string {
   return file.path.startsWith("/") ? file.path : `/${file.path}`;
 }
 
-export type FileType = "question_bank" | "answer_key" | "exam" | "exam_solution";
+export type FileType =
+  | "question_bank"
+  | "answer_key"
+  | "exam"
+  | "exam_solution"
+  | "review";
 
 type FileTypeMeta = {
   labelAr: string;
-  tab: "bank" | "exams";
+  tab: "bank" | "exams" | "review";
   toneClass: string;
 };
 
@@ -35,6 +40,11 @@ export const FILE_TYPE_META: Record<FileType, FileTypeMeta> = {
     labelAr: "حل الاختبارات",
     tab: "exams",
     toneClass: "bg-[color-mix(in_oklab,#8B5CF6_18%,transparent)] text-[#7C3AED]",
+  },
+  review: {
+    labelAr: "مراجعة",
+    tab: "review",
+    toneClass: "bg-[color-mix(in_oklab,var(--romi-gold)_18%,transparent)] text-[var(--romi-gold-dark)]",
   },
 };
 
