@@ -104,12 +104,13 @@ export function FileUploadDialog({ units }: Props) {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-start justify-center bg-[color-mix(in_oklab,#000_55%,transparent)] p-4 backdrop-blur-sm sm:items-center"
+          className="fixed inset-0 z-50 overflow-y-auto bg-[color-mix(in_oklab,#000_55%,transparent)] backdrop-blur-sm"
           onClick={() => !pending && (setOpen(false), reset())}
         >
+          <div className="flex min-h-full items-start justify-center p-4 sm:items-center">
           <div
             onClick={(e) => e.stopPropagation()}
-            className="my-4 max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)] p-5 shadow-xl"
+            className="w-full max-w-lg rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)] p-5 shadow-xl"
           >
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold">
@@ -254,6 +255,7 @@ export function FileUploadDialog({ units }: Props) {
                 </button>
               </div>
             </form>
+          </div>
           </div>
         </div>
       )}

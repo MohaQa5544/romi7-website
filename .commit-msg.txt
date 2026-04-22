@@ -1,7 +1,11 @@
-fix(admin): make all dialogs scroll on short viewports
+fix(admin): bullet-proof modal scroll using overflow on overlay
 
-Previous fix relied on the outer overlay's overflow-y-auto, but
-that doesn't reliably scroll across browsers when body overflow
-is locked. Move the scroll inside the card itself with
-max-h:calc(100dvh - 2rem) + overflow-y-auto. Applied to all four
-dialogs: file upload, question, announcement, unit.
+The previous attempt put max-h+overflow on the card, but with
+items-center the card was vertically centered and could spill
+above the viewport (top of dialog cut off, no way to reach it).
+
+Switched to the canonical pattern: outer overlay has overflow-y-auto,
+inner wrapper is min-h-full + flex centered, card is normal-height.
+When card is taller than viewport, the overlay itself scrolls and
+the user can reach every part of the card. Applied to all four
+admin dialogs.
