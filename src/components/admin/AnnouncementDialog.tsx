@@ -58,12 +58,12 @@ export function AnnouncementDialog({ announcement, trigger = "add" }: Props) {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,#000_55%,transparent)] p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-[color-mix(in_oklab,#000_55%,transparent)] p-4 backdrop-blur-sm sm:items-center"
           onClick={() => setOpen(false)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)] p-5 shadow-xl"
+            className="my-4 max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)] p-5 shadow-xl"
           >
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold">

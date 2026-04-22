@@ -150,12 +150,12 @@ export function QuestionDialog({ unitId, question, trigger = "button" }: Props) 
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[color-mix(in_oklab,#000_55%,transparent)] p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-[color-mix(in_oklab,#000_55%,transparent)] p-4 backdrop-blur-sm sm:items-center"
           onClick={() => !pending && setOpen(false)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="my-8 w-full max-w-2xl rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)] p-5 shadow-xl"
+            className="my-4 max-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-y-auto rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)] p-5 shadow-xl"
           >
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold">
