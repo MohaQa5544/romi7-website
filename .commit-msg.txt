@@ -1,7 +1,22 @@
-fix(admin): add mobile back-to-site and logout buttons
+feat: video lesson type, dialog scroll fix, full PDF preview
 
-On mobile the admin sidebar is hidden, which also hid the logout
-button, and the "back to site" link was sm:inline (hidden below
-640px). Added icon-only back and logout buttons to the header on
-mobile so admins can exit the dashboard without rotating their
-phone.
+Three improvements:
+
+1. New "فيديوهات شرح" content type backed by YouTube. Schema gains
+   a "video" file type and "youtube" source. Admin upload dialog
+   switches form when video is selected: shows a YouTube URL field
+   instead of a PDF file picker. URL is parsed (watch?v / youtu.be /
+   shorts / embed) and stored as the canonical watch URL. Student
+   FileCard renders a red "مشاهدة" button that opens the video
+   inside an in-page modal via youtube-nocookie embed — no leaving
+   the site. New "فيديوهات شرح" tab on the unit page groups them.
+
+2. Admin dialogs scroll properly. FileUploadDialog was
+   `items-center` without overflow, so taller content was clipped
+   on short viewports. Switched to `items-start overflow-y-auto`
+   with vertical margin on the card. Type selector also moved to
+   the top so the rest of the form responds to it.
+
+3. PDF preview modal now uses 100dvh + min-h-0 on flex children
+   so the iframe takes the full available height instead of
+   collapsing on some browsers.

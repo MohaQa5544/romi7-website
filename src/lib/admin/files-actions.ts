@@ -6,12 +6,13 @@ import { z } from "zod";
 import { del, put } from "@vercel/blob";
 import { db, schema } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { extractYoutubeId } from "@/lib/files";
 
 const fileMetaInput = z.object({
   id: z.string().optional(),
   unitId: z.string().min(1, "الوحدة مطلوبة"),
   titleAr: z.string().trim().min(2, "العنوان قصير جداً"),
-  type: z.enum(["question_bank", "answer_key", "exam", "exam_solution", "review"]),
+  type: z.enum(["question_bank", "answer_key", "exam", "exam_solution", "review", "video"]),
   examNumber: z
     .union([z.string(), z.number()])
     .optional()
@@ -57,11 +58,51 @@ export async function saveFileMeta(
 const uploadedInput = z.object({
   unitId: z.string().min(1),
   titleAr: z.string().trim().min(2),
-  type: z.enum(["question_bank", "answer_key", "exam", "exam_solution", "review"]),
+  type: z.enum(["question_bank", "answer_key", "exam", "exam_solution", "review", "video"]),
   examNumber: z.coerce.number().int().optional().nullable(),
   blobUrl: z.string().url(),
   sizeBytes: z.coerce.number().int().optional().nullable(),
 });
+
+const videoInput = z.object({
+  unitId: z.string().min(1, "الوحدة مطلوبة"),
+  titleAr: z.string().trim().min(2, "العنوان قصير جداً"),
+  youtubeUrl: z.string().trim().min(5, "رابط يوتيوب مطلوب"),
+});
+
+export async function addVideoLesson(fd: FormData): Promise<{ ok: boolean; error?: string }> {
+  const session = await requireAdmin();
+
+  const parsed = videoInput.safeParse({
+    unitId: String(fd.get("unitId") ?? ""),
+    titleAr: String(fd.get("titleAr") ?? ""),
+    youtubeUrl: String(fd.get("youtubeUrl") ?? ""),
+  });
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "بيانات غير صحيحة" };
+  }
+
+  const id = extractYoutubeId(parsed.data.youtubeUrl);
+  if (!id) {
+    return { ok: false, error: "رابط يوتيوب غير صالح — تأكّد من نسخ الرابط كاملاً" };
+  }
+
+  try {
+    await db.insert(schema.files).values({
+      unitId: parsed.data.unitId,
+      titleAr: parsed.data.titleAr,
+      type: "video",
+      source: "youtube",
+      path: `https://www.youtube.com/watch?v=${id}`,
+      uploadedBy: session.user.id,
+    });
+    revalidatePath("/admin/files");
+    revalidatePath(`/unit/${parsed.data.unitId}`);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "فشل الحفظ" };
+  }
+}
 
 export async function registerUploadedFile(
   input: z.input<typeof uploadedInput>,

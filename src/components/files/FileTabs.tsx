@@ -5,12 +5,13 @@ import type { FileRow } from "@/lib/db/schema";
 import { getFileTypeMeta } from "@/lib/files";
 import { FileCard } from "./FileCard";
 
-type Tab = "bank" | "exams" | "review";
+type Tab = "bank" | "exams" | "review" | "videos";
 
 const TAB_LABEL: Record<Tab, string> = {
   bank: "بنك الأسئلة",
   exams: "الاختبارات",
   review: "مراجعة",
+  videos: "فيديوهات شرح",
 };
 
 type Props = {
@@ -19,13 +20,13 @@ type Props = {
 };
 
 export function FileTabs({ files, bookmarkedIds }: Props) {
-  const grouped: Record<Tab, FileRow[]> = { bank: [], exams: [], review: [] };
+  const grouped: Record<Tab, FileRow[]> = { bank: [], exams: [], review: [], videos: [] };
   for (const f of files) {
     const tab = getFileTypeMeta(f.type).tab;
     grouped[tab].push(f);
   }
 
-  const availableTabs: Tab[] = (["bank", "exams", "review"] as Tab[]).filter(
+  const availableTabs: Tab[] = (["bank", "exams", "review", "videos"] as Tab[]).filter(
     (t) => grouped[t].length > 0,
   );
   const [active, setActive] = useState<Tab>(availableTabs[0] ?? "bank");

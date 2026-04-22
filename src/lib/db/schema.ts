@@ -59,10 +59,10 @@ export const files = sqliteTable(
     unitId: text("unit_id").notNull().references(() => units.id),
     titleAr: text("title_ar").notNull(),
     type: text("type", {
-      enum: ["question_bank", "answer_key", "exam", "exam_solution", "review"],
+      enum: ["question_bank", "answer_key", "exam", "exam_solution", "review", "video"],
     }).notNull(),
     examNumber: integer("exam_number"),
-    source: text("source", { enum: ["repo", "blob"] }).notNull(),
+    source: text("source", { enum: ["repo", "blob", "youtube"] }).notNull(),
     path: text("path").notNull(),
     sizeBytes: integer("size_bytes"),
     downloadCount: integer("download_count").notNull().default(0),

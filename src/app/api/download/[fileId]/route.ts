@@ -41,6 +41,11 @@ export async function GET(
       .catch(() => {});
   }
 
+  // youtube sources → just redirect to the video URL
+  if (file.source === "youtube") {
+    return NextResponse.redirect(file.path, 302);
+  }
+
   // repo sources → serve from /public via redirect
   if (file.source === "repo") {
     const target = file.path.startsWith("/") ? file.path : `/${file.path}`;

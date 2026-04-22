@@ -12,11 +12,12 @@ export type FileType =
   | "answer_key"
   | "exam"
   | "exam_solution"
-  | "review";
+  | "review"
+  | "video";
 
 type FileTypeMeta = {
   labelAr: string;
-  tab: "bank" | "exams" | "review";
+  tab: "bank" | "exams" | "review" | "videos";
   toneClass: string;
 };
 
@@ -46,7 +47,32 @@ export const FILE_TYPE_META: Record<FileType, FileTypeMeta> = {
     tab: "review",
     toneClass: "bg-[color-mix(in_oklab,var(--romi-gold)_18%,transparent)] text-[var(--romi-gold-dark)]",
   },
+  video: {
+    labelAr: "فيديوهات شرح",
+    tab: "videos",
+    toneClass: "bg-[color-mix(in_oklab,#EF4444_14%,transparent)] text-[#DC2626]",
+  },
 };
+
+/** Extract a YouTube video ID from any common URL form
+ * (watch?v=, youtu.be/, /embed/, /shorts/) or return the input
+ * if it's already an 11-char ID. Returns null on failure. */
+export function extractYoutubeId(input: string): string | null {
+  const s = input.trim();
+  if (!s) return null;
+  if (/^[\w-]{11}$/.test(s)) return s;
+  try {
+    const u = new URL(s);
+    const v = u.searchParams.get("v");
+    if (v && /^[\w-]{11}$/.test(v)) return v;
+    // youtu.be/ID or /embed/ID or /shorts/ID
+    const m = u.pathname.match(/(?:^|\/)(?:embed|shorts)\/([\w-]{11})|^\/([\w-]{11})$/);
+    if (m) return m[1] ?? m[2] ?? null;
+  } catch {
+    return null;
+  }
+  return null;
+}
 
 /** Legacy types (summary/update/other) that may still exist in the DB
  * before migration. Defensively map them to question_bank for display. */

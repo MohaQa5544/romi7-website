@@ -56,7 +56,13 @@ export default async function FilesSearchPage({ searchParams }: { searchParams: 
     conds.push(
       eq(
         schema.files.type,
-        type as "question_bank" | "answer_key" | "exam" | "exam_solution" | "review",
+        type as
+          | "question_bank"
+          | "answer_key"
+          | "exam"
+          | "exam_solution"
+          | "review"
+          | "video",
       ),
     );
 

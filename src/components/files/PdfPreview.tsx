@@ -47,7 +47,7 @@ export function PdfPreview({ src, title, open, onClose }: Props) {
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-50 flex flex-col bg-[color-mix(in_oklab,#000_70%,transparent)] backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex h-[100dvh] flex-col bg-[color-mix(in_oklab,#000_70%,transparent)] backdrop-blur-sm"
       onClick={onClose}
     >
       <div className="flex items-center justify-between gap-4 px-5 py-3 text-white">
@@ -61,11 +61,14 @@ export function PdfPreview({ src, title, open, onClose }: Props) {
           <X size={18} />
         </button>
       </div>
-      <div className="flex-1 px-2 pb-4 sm:px-4" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="flex min-h-0 flex-1 px-2 pb-4 sm:px-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <iframe
           src={src}
           title={title}
-          className="h-full w-full rounded-[var(--radius-default)] border border-white/10 bg-white"
+          className="h-full min-h-0 w-full rounded-[var(--radius-default)] border border-white/10 bg-white"
         />
       </div>
     </div>
