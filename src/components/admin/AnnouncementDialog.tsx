@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState, useActionState } from "react";
-import { Pencil, Plus, X, Loader2 } from "lucide-react";
+import { Pencil, Plus, Loader2 } from "lucide-react";
 import {
   saveAnnouncement,
   type AnnouncementFormState,
 } from "@/lib/admin/announcements-actions";
+import { DialogShell } from "./DialogShell";
 
 type Announcement = {
   id: string;
@@ -29,13 +30,7 @@ export function AnnouncementDialog({ announcement, trigger = "add" }: Props) {
     if (state?.ok) setOpen(false);
   }, [state]);
 
-  useEffect(() => {
-    if (!open) return;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
+  const formId = "announcement-form";
 
   return (
     <>
@@ -54,101 +49,86 @@ export function AnnouncementDialog({ announcement, trigger = "add" }: Props) {
         </button>
       )}
 
-      {open && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 overflow-y-auto bg-[color-mix(in_oklab,#000_55%,transparent)] backdrop-blur-sm"
-          onClick={() => setOpen(false)}
-        >
-          <div className="flex min-h-full items-start justify-center p-4 sm:items-center">
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)] p-5 shadow-xl"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-display text-lg font-semibold">
-                {announcement ? "تعديل إعلان" : "إعلان جديد"}
-              </h2>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="إغلاق"
-                className="rounded-full p-1 text-[var(--text-muted)] hover:bg-[var(--surface-2)]"
-              >
-                <X size={16} />
-              </button>
-            </div>
+      <DialogShell
+        open={open}
+        onClose={() => setOpen(false)}
+        title={announcement ? "تعديل إعلان" : "إعلان جديد"}
+        size="lg"
+        busy={pending}
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              disabled={pending}
+              className="btn-outline text-sm"
+            >
+              إلغاء
+            </button>
+            <button
+              type="submit"
+              form={formId}
+              disabled={pending}
+              className="btn-gold text-sm"
+            >
+              {pending && <Loader2 size={14} className="me-1.5 inline animate-spin" />}
+              حفظ
+            </button>
+          </>
+        }
+      >
+        <form id={formId} action={action} className="space-y-4">
+          {announcement && <input type="hidden" name="id" value={announcement.id} />}
 
-            <form action={action} className="space-y-4">
-              {announcement && <input type="hidden" name="id" value={announcement.id} />}
+          <Field label="العنوان" name="titleAr" defaultValue={announcement?.titleAr} />
+          <Field
+            label="النصّ"
+            name="bodyAr"
+            type="textarea"
+            defaultValue={announcement?.bodyAr}
+            rows={5}
+          />
+          <Field
+            label="الأهمّيّة"
+            name="severity"
+            type="select"
+            defaultValue={announcement?.severity ?? "info"}
+            options={[
+              { value: "info", label: "إعلان عامّ" },
+              { value: "success", label: "خبر سارّ" },
+              { value: "warning", label: "تنبيه" },
+              { value: "urgent", label: "عاجل" },
+            ]}
+          />
 
-              <Field label="العنوان" name="titleAr" defaultValue={announcement?.titleAr} />
-              <Field
-                label="النصّ"
-                name="bodyAr"
-                type="textarea"
-                defaultValue={announcement?.bodyAr}
-                rows={5}
+          <div className="flex flex-wrap gap-5">
+            <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="isPinned"
+                defaultChecked={announcement?.isPinned ?? false}
+                className="h-4 w-4 rounded border-[var(--border-default)]"
               />
-              <Field
-                label="الأهمّيّة"
-                name="severity"
-                type="select"
-                defaultValue={announcement?.severity ?? "info"}
-                options={[
-                  { value: "info", label: "إعلان عامّ" },
-                  { value: "success", label: "خبر سارّ" },
-                  { value: "warning", label: "تنبيه" },
-                  { value: "urgent", label: "عاجل" },
-                ]}
+              مثبّت في الصفحة الرئيسية
+            </label>
+            <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="isPublished"
+                defaultChecked={announcement?.isPublished ?? true}
+                className="h-4 w-4 rounded border-[var(--border-default)]"
               />
-
-              <div className="flex gap-5">
-                <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    name="isPinned"
-                    defaultChecked={announcement?.isPinned ?? false}
-                    className="h-4 w-4 rounded border-[var(--border-default)]"
-                  />
-                  مثبّت في الصفحة الرئيسية
-                </label>
-                <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    name="isPublished"
-                    defaultChecked={announcement?.isPublished ?? true}
-                    className="h-4 w-4 rounded border-[var(--border-default)]"
-                  />
-                  منشور
-                </label>
-              </div>
-
-              {state && !state.ok && (
-                <p className="rounded-[var(--radius-default)] border border-[var(--danger)]/30 bg-[var(--danger)]/8 px-3 py-2 text-xs text-[var(--danger)]">
-                  {state.error}
-                </p>
-              )}
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="btn-outline text-sm"
-                >
-                  إلغاء
-                </button>
-                <button type="submit" disabled={pending} className="btn-gold text-sm">
-                  {pending && <Loader2 size={14} className="me-1.5 inline animate-spin" />}
-                  حفظ
-                </button>
-              </div>
-            </form>
+              منشور
+            </label>
           </div>
-          </div>
-        </div>
-      )}
+
+          {state && !state.ok && (
+            <p className="rounded-[var(--radius-default)] border border-[var(--danger)]/30 bg-[var(--danger)]/8 px-3 py-2 text-xs text-[var(--danger)]">
+              {state.error}
+            </p>
+          )}
+        </form>
+      </DialogShell>
     </>
   );
 }
