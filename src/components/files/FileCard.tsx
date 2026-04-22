@@ -1,12 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Download, Eye, FileText, PlayCircle, Youtube } from "lucide-react";
 import type { FileRow } from "@/lib/db/schema";
 import { getFileTypeMeta, formatSize, extractYoutubeId } from "@/lib/files";
 import { BookmarkButton } from "./BookmarkButton";
 import { PdfPreview } from "./PdfPreview";
-import { VideoPreview } from "./VideoPreview";
 
 type Props = {
   file: FileRow;
@@ -59,14 +59,13 @@ export function FileCard({ file, bookmarked, showBookmark = true }: Props) {
           <div className="flex flex-wrap items-center gap-2 pt-1">
             {isVideo && youtubeId ? (
               <>
-                <button
-                  type="button"
-                  onClick={() => setPreviewOpen(true)}
+                <Link
+                  href={`/video/${file.id}`}
                   className="inline-flex items-center gap-1.5 rounded-[var(--radius-default)] bg-[#DC2626] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#B91C1C]"
                 >
                   <PlayCircle size={14} />
                   مشاهدة
-                </button>
+                </Link>
                 {showBookmark && (
                   <BookmarkButton fileId={file.id} initial={bookmarked} size="sm" />
                 )}
@@ -99,14 +98,7 @@ export function FileCard({ file, bookmarked, showBookmark = true }: Props) {
         </div>
       </div>
 
-      {isVideo && youtubeId ? (
-        <VideoPreview
-          videoId={youtubeId}
-          title={file.titleAr}
-          open={previewOpen}
-          onClose={() => setPreviewOpen(false)}
-        />
-      ) : (
+      {!isVideo && (
         <PdfPreview
           src={previewUrl}
           title={file.titleAr}

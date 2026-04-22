@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 type Props = {
@@ -12,6 +13,11 @@ type Props = {
 
 export function PdfPreview({ src, title, open, onClose }: Props) {
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -40,9 +46,9 @@ export function PdfPreview({ src, title, open, onClose }: Props) {
     };
   }, [open, isMobile, src, onClose]);
 
-  if (!open || isMobile) return null;
+  if (!open || isMobile || !mounted) return null;
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -71,6 +77,7 @@ export function PdfPreview({ src, title, open, onClose }: Props) {
           className="h-full min-h-0 w-full rounded-[var(--radius-default)] border border-white/10 bg-white"
         />
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

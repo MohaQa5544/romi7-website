@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 type Size = "md" | "lg" | "xl";
@@ -27,14 +28,19 @@ type Props = {
 /**
  * Shared modal shell for all admin dialogs.
  *
- * Layout pattern:
- *  - Overlay is the scrolling element (overflow-y-auto)
- *  - Inner wrapper uses flex + min-h-full so the card centers when
- *    short and scrolls with the overlay when tall.
- *  - Card has a clear header / body / footer split with bordered
- *    sections — no more "cramped narrow box".
- *  - On mobile (< sm) the card snaps to the bottom edge as a
- *    bottom-sheet with rounded top corners only.
+ * Rendered through a portal into `document.body` — critical because
+ * ancestor elements can have `transform` (e.g. the page-in animation
+ * `romi-page-in` uses translateY with fill-mode both, which sticks).
+ * A `position: fixed` descendant of a transformed ancestor is
+ * positioned relative to that ancestor, not the viewport, which
+ * breaks scroll containment. Portal escapes it completely.
+ *
+ * Layout:
+ *  - Overlay is the scroll container (overflow-y-auto)
+ *  - Inner wrapper uses flex + min-h-full so short content centers
+ *    and tall content scrolls with the overlay
+ *  - Card has header / body / footer split with sticky footer feel
+ *  - On mobile (< sm): bottom-sheet with rounded top corners only
  */
 export function DialogShell({
   open,
@@ -45,37 +51,44 @@ export function DialogShell({
   children,
   footer,
 }: Props) {
+  // Only mount portal client-side (SSR-safe)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !busy) onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
     };
   }, [open, busy, onClose]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   const tryClose = () => {
     if (!busy) onClose();
   };
 
-  return (
+  const content = (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-50 overflow-y-auto bg-[color-mix(in_oklab,#000_55%,transparent)] backdrop-blur-sm"
+      className="fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-[color-mix(in_oklab,#000_55%,transparent)] backdrop-blur-sm"
       onClick={tryClose}
     >
       <div className="flex min-h-full items-end justify-center p-0 sm:items-center sm:p-6">
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`flex w-full ${SIZE_CLASS[size]} flex-col rounded-t-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)] shadow-2xl sm:rounded-[var(--radius-lg)]`}
+          className={`flex w-full ${SIZE_CLASS[size]} flex-col rounded-t-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)] shadow-2xl sm:my-0 sm:rounded-[var(--radius-lg)]`}
         >
           {/* Header */}
           <div className="flex items-center justify-between gap-4 border-b border-[var(--border-subtle)] px-6 py-4">
@@ -104,4 +117,6 @@ export function DialogShell({
       </div>
     </div>
   );
+
+  return createPortal(content, document.body);
 }
