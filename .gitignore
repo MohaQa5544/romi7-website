@@ -45,9 +45,9 @@ yarn-error.log*
 drizzle
 .drizzle
 
-# pwa
-public/sw.js
-public/sw.js.map
+# pwa — generated workbox chunks (the project no longer ships a PWA;
+# /public/sw.js itself is intentionally tracked so it can serve as a
+# self-unregistering stub that cleans up old service workers).
 public/workbox-*.js
 public/workbox-*.js.map
 public/worker-*.js
