@@ -10,10 +10,19 @@ type Props = {
   semesters: Option[];
   units: Option[];
   types: Option[];
+  mockTypes?: Option[];
+  mockUnitKey?: string;
   defaults: { q: string; semester: string; unit: string; type: string };
 };
 
-export function FileSearchFilters({ semesters, units, types, defaults }: Props) {
+export function FileSearchFilters({
+  semesters,
+  units,
+  types,
+  mockTypes = [],
+  mockUnitKey = "__mock__",
+  defaults,
+}: Props) {
   const router = useRouter();
   const sp = useSearchParams();
   const [pending, start] = useTransition();
@@ -26,10 +35,22 @@ export function FileSearchFilters({ semesters, units, types, defaults }: Props) 
   // When semester changes, reset unit unless the current unit is valid for that semester.
   const unitsForSem = units.filter(() => true); // `units` is already filtered by the server based on URL `semester`
 
+  const isMock = unit === mockUnitKey;
+  const activeTypes = isMock ? mockTypes : types;
+
   function onSemesterChange(next: string) {
     setSemester(next);
     // the server will refilter units — but on client, reset until the next page load
     if (next !== semester) setUnit("");
+  }
+
+  function onUnitChange(next: string) {
+    setUnit(next);
+    // Switching between mock and regular units — the type lists differ, so reset
+    // the selected type to avoid leaving an invalid selection in the URL.
+    const wasMock = unit === mockUnitKey;
+    const willBeMock = next === mockUnitKey;
+    if (wasMock !== willBeMock) setType("");
   }
 
   function submit(e?: React.FormEvent) {
@@ -57,7 +78,7 @@ export function FileSearchFilters({ semesters, units, types, defaults }: Props) 
       className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-0)] p-3 shadow-sm sm:p-4"
     >
       <div className="flex flex-wrap items-stretch gap-2">
-        {/* Semester */}
+        {/* Semester — also applies to mock exams (each book has its own mock exams) */}
         <DropdownSelect
           value={semester}
           onChange={onSemesterChange}
@@ -67,17 +88,17 @@ export function FileSearchFilters({ semesters, units, types, defaults }: Props) 
         {/* Unit */}
         <DropdownSelect
           value={unit}
-          onChange={setUnit}
+          onChange={onUnitChange}
           placeholder="الوحدة"
           options={unitsForSem}
           disabled={unitsForSem.length === 0}
         />
-        {/* Type */}
+        {/* Type — switches between regular types and the two mock-exam options */}
         <DropdownSelect
           value={type}
           onChange={setType}
-          placeholder="نوع المحتوى"
-          options={types}
+          placeholder={isMock ? "محلول / غير محلول" : "نوع المحتوى"}
+          options={activeTypes}
         />
 
         {/* Text search */}

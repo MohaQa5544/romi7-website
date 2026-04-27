@@ -6,7 +6,8 @@ import { uploadFile, addVideoLesson } from "@/lib/admin/files-actions";
 import type { Unit } from "@/lib/db/schema";
 import { DialogShell } from "./DialogShell";
 
-type Props = { units: Unit[] };
+type SemesterOpt = { id: string; nameAr: string };
+type Props = { units: Unit[]; semesters: SemesterOpt[] };
 
 const TYPE_OPTIONS = [
   { value: "question_bank", label: "بنك الأسئلة" },
@@ -15,11 +16,15 @@ const TYPE_OPTIONS = [
   { value: "exam_solution", label: "حل الاختبارات" },
   { value: "review", label: "مراجعة" },
   { value: "video", label: "فيديوهات شرح" },
+  { value: "mock_exam", label: "اختبار تجريبي — غير محلول" },
+  { value: "mock_exam_solution", label: "اختبار تجريبي — محلول" },
 ];
+
+const MOCK_TYPES = new Set(["mock_exam", "mock_exam_solution"]);
 
 const MAX_BYTES = 50 * 1024 * 1024;
 
-export function FileUploadDialog({ units }: Props) {
+export function FileUploadDialog({ units, semesters }: Props) {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [type, setType] = useState<string>("question_bank");
@@ -27,6 +32,7 @@ export function FileUploadDialog({ units }: Props) {
   const [pending, start] = useTransition();
 
   const isVideo = type === "video";
+  const isMock = MOCK_TYPES.has(type);
   const formId = "file-upload-form";
 
   function reset() {
@@ -202,25 +208,43 @@ export function FileUploadDialog({ units }: Props) {
             name="titleAr"
           />
 
-          <div className={isVideo ? "" : "grid grid-cols-1 gap-3 sm:grid-cols-2"}>
-            <Field
-              label="الوحدة"
-              name="unitId"
-              type="select"
-              defaultValue={units[0]?.id}
-              options={units.map((u) => ({
-                value: u.id,
-                label: `${u.number}. ${u.nameAr}`,
-              }))}
-            />
-            {!isVideo && (
+          {isMock ? (
+            <div className="space-y-3">
+              <div className="rounded-[var(--radius-default)] border border-dashed border-[var(--border-default)] bg-[var(--surface-1)] px-3 py-2.5 text-xs text-[var(--text-secondary)]">
+                📘 الاختبار التجريبي شامل لكتاب فصل دراسي كامل — اختر الفصل الذي يخصّه هذا الاختبار.
+              </div>
               <Field
-                label="رقم الاختبار (اختياري)"
-                name="examNumber"
-                type="number"
+                label="الفصل الدراسي (الكتاب)"
+                name="semesterId"
+                type="select"
+                defaultValue={semesters[0]?.id}
+                options={semesters.map((s) => ({ value: s.id, label: s.nameAr }))}
               />
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className={isVideo ? "" : "grid grid-cols-1 gap-3 sm:grid-cols-2"}>
+              <Field
+                label="الوحدة"
+                name="unitId"
+                type="select"
+                defaultValue={units[0]?.id}
+                options={units.map((u) => ({
+                  value: u.id,
+                  label: `${u.number}. ${u.nameAr}`,
+                }))}
+              />
+              {!isVideo && (
+                <Field
+                  label="رقم الاختبار (اختياري)"
+                  name="examNumber"
+                  type="number"
+                />
+              )}
+            </div>
+          )}
+          {isMock && (
+            <Field label="رقم الاختبار التجريبي (اختياري)" name="examNumber" type="number" />
+          )}
 
           {pending && (
             <div className="flex items-center gap-2 rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-1)] px-3 py-2.5 text-xs text-[var(--text-secondary)]">

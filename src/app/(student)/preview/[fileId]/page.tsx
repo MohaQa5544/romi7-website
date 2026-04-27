@@ -23,10 +23,12 @@ export default async function PreviewPage({
     notFound();
   }
 
-  const [unit] = await db
-    .select({ id: schema.units.id, number: schema.units.number, nameAr: schema.units.nameAr })
-    .from(schema.units)
-    .where(eq(schema.units.id, file.unitId));
+  const [unit] = file.unitId
+    ? await db
+        .select({ id: schema.units.id, number: schema.units.number, nameAr: schema.units.nameAr })
+        .from(schema.units)
+        .where(eq(schema.units.id, file.unitId))
+    : [undefined];
 
   const meta = getFileTypeMeta(file.type as FileType);
   const previewUrl = `/api/download/${file.id}?preview=1`;

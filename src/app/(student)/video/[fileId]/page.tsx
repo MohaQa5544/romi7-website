@@ -26,10 +26,12 @@ export default async function VideoPage({
   const videoId = extractYoutubeId(file.path);
   if (!videoId) notFound();
 
-  const [unit] = await db
-    .select({ id: schema.units.id, number: schema.units.number, nameAr: schema.units.nameAr })
-    .from(schema.units)
-    .where(eq(schema.units.id, file.unitId));
+  const [unit] = file.unitId
+    ? await db
+        .select({ id: schema.units.id, number: schema.units.number, nameAr: schema.units.nameAr })
+        .from(schema.units)
+        .where(eq(schema.units.id, file.unitId))
+    : [undefined];
 
   const src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`;
   const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;

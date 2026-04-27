@@ -1,9 +1,15 @@
-import { and, asc, desc, eq, like, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, isNull, like, type SQL } from "drizzle-orm";
 import { FileText, Search } from "lucide-react";
 import Link from "next/link";
 import { db, schema } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
-import { FILE_TYPE_META, formatSize, getFileTypeMeta } from "@/lib/files";
+import {
+  FILE_TYPE_META,
+  MOCK_UNIT_KEY,
+  MOCK_UNIT_LABEL,
+  formatSize,
+  getFileTypeMeta,
+} from "@/lib/files";
 import { FileUploadDialog } from "@/components/admin/FileUploadDialog";
 import { TogglePublishButton } from "@/components/admin/TogglePublishButton";
 import { DeleteButton } from "@/components/admin/DeleteButton";
@@ -26,7 +32,11 @@ export default async function AdminFilesPage({
 
   const conditions: SQL[] = [];
   if (q) conditions.push(like(schema.files.titleAr, `%${q}%`));
-  if (unit) conditions.push(eq(schema.files.unitId, unit));
+  if (unit === MOCK_UNIT_KEY) {
+    conditions.push(isNull(schema.files.unitId));
+  } else if (unit) {
+    conditions.push(eq(schema.files.unitId, unit));
+  }
   if (type)
     conditions.push(
       eq(
@@ -41,8 +51,9 @@ export default async function AdminFilesPage({
       ),
     );
 
-  const [units, rows] = await Promise.all([
+  const [units, semesters, rows] = await Promise.all([
     db.select().from(schema.units).orderBy(asc(schema.units.order)),
+    db.select().from(schema.semesters).orderBy(asc(schema.semesters.order)),
     db
       .select({
         id: schema.files.id,
@@ -74,7 +85,7 @@ export default async function AdminFilesPage({
           </h1>
           <p className="text-sm text-[var(--text-secondary)]">{rows.length} ملف</p>
         </div>
-        <FileUploadDialog units={units} />
+        <FileUploadDialog units={units} semesters={semesters} />
       </header>
 
       <form
@@ -114,6 +125,7 @@ export default async function AdminFilesPage({
                 {u.number}. {u.nameAr}
               </option>
             ))}
+            <option value={MOCK_UNIT_KEY}>{MOCK_UNIT_LABEL}</option>
           </select>
         </label>
         <label className="space-y-1">
@@ -181,7 +193,9 @@ export default async function AdminFilesPage({
                       )}
                     </td>
                     <td className="px-4 py-2.5 text-[var(--text-secondary)]">
-                      {f.unitNumber}. {f.unitNameAr}
+                      {f.unitId
+                        ? `${f.unitNumber}. ${f.unitNameAr}`
+                        : MOCK_UNIT_LABEL}
                     </td>
                     <td className="px-4 py-2.5">
                       <span

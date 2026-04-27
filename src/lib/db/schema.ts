@@ -56,10 +56,21 @@ export const files = sqliteTable(
   "files",
   {
     id: text("id").primaryKey().$defaultFn(() => createId()),
-    unitId: text("unit_id").notNull().references(() => units.id),
+    unitId: text("unit_id").references(() => units.id),
+    /** Set ONLY for mock-exam files (unitId is null then). Picks which book/semester the mock covers. */
+    semesterId: text("semester_id").references(() => semesters.id),
     titleAr: text("title_ar").notNull(),
     type: text("type", {
-      enum: ["question_bank", "answer_key", "exam", "exam_solution", "review", "video"],
+      enum: [
+        "question_bank",
+        "answer_key",
+        "exam",
+        "exam_solution",
+        "review",
+        "video",
+        "mock_exam",
+        "mock_exam_solution",
+      ],
     }).notNull(),
     examNumber: integer("exam_number"),
     source: text("source", { enum: ["repo", "blob", "youtube"] }).notNull(),

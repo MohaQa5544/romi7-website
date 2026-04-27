@@ -13,13 +13,24 @@ export type FileType =
   | "exam"
   | "exam_solution"
   | "review"
-  | "video";
+  | "video"
+  | "mock_exam"
+  | "mock_exam_solution";
 
 type FileTypeMeta = {
   labelAr: string;
-  tab: "bank" | "exams" | "review" | "videos";
+  tab: "bank" | "exams" | "review" | "videos" | "mock";
   toneClass: string;
 };
+
+/** Pseudo-unit identifier used in the unit filter dropdown to mean
+ *  "comprehensive mock exams covering the whole book — not tied to a unit". */
+export const MOCK_UNIT_KEY = "__mock__";
+export const MOCK_UNIT_LABEL = "اختبارات تجريبية";
+
+/** File types that belong to the "mock exams" virtual unit. */
+export const MOCK_EXAM_TYPES = ["mock_exam", "mock_exam_solution"] as const;
+export type MockExamType = (typeof MOCK_EXAM_TYPES)[number];
 
 export const FILE_TYPE_META: Record<FileType, FileTypeMeta> = {
   question_bank: {
@@ -51,6 +62,16 @@ export const FILE_TYPE_META: Record<FileType, FileTypeMeta> = {
     labelAr: "فيديوهات شرح",
     tab: "videos",
     toneClass: "bg-[color-mix(in_oklab,#EF4444_14%,transparent)] text-[#DC2626]",
+  },
+  mock_exam: {
+    labelAr: "غير محلول",
+    tab: "mock",
+    toneClass: "bg-[color-mix(in_oklab,var(--danger)_14%,transparent)] text-[var(--danger)]",
+  },
+  mock_exam_solution: {
+    labelAr: "محلول",
+    tab: "mock",
+    toneClass: "bg-[color-mix(in_oklab,var(--success)_18%,transparent)] text-[var(--success)]",
   },
 };
 

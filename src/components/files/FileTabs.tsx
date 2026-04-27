@@ -23,6 +23,8 @@ export function FileTabs({ files, bookmarkedIds }: Props) {
   const grouped: Record<Tab, FileRow[]> = { bank: [], exams: [], review: [], videos: [] };
   for (const f of files) {
     const tab = getFileTypeMeta(f.type).tab;
+    // mock-exam files don't belong to any unit, so they shouldn't appear here
+    if (tab === "mock") continue;
     grouped[tab].push(f);
   }
 
