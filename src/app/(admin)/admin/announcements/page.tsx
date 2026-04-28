@@ -50,6 +50,23 @@ export default async function AdminAnnouncementsPage() {
                 className={`rounded-[var(--radius-lg)] border p-4 ${meta.container}`}
               >
                 <div className="flex flex-wrap items-start gap-4">
+                  {a.imageUrl && (
+                    <a
+                      href={a.imageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block h-20 w-20 shrink-0 overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
+                      title="فتح الصورة بالحجم الكامل"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={a.imageUrl}
+                        alt={a.titleAr}
+                        className="block h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                    </a>
+                  )}
                   <div className="flex-1 min-w-0 space-y-1.5">
                     <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium">
                       <span className={meta.accent}>{meta.label}</span>
@@ -60,9 +77,11 @@ export default async function AdminAnnouncementsPage() {
                     <h3 className="font-display text-base font-semibold text-[var(--text-primary)]">
                       {a.titleAr}
                     </h3>
-                    <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--text-secondary)]">
-                      {a.bodyAr}
-                    </p>
+                    {a.bodyAr && (
+                      <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--text-secondary)]">
+                        {a.bodyAr}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex flex-wrap items-center gap-1.5">

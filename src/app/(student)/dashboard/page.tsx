@@ -102,6 +102,7 @@ export default async function DashboardPage() {
           id={pinned.id}
           title={pinned.titleAr}
           body={pinned.bodyAr}
+          imageUrl={pinned.imageUrl}
           severity={pinned.severity}
         />
       )}

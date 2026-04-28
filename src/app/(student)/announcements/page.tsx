@@ -56,9 +56,27 @@ export default async function AnnouncementsPage() {
                     <h2 className="font-display text-base font-semibold text-[var(--text-primary)]">
                       {a.titleAr}
                     </h2>
-                    <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--text-secondary)]">
-                      {a.bodyAr}
-                    </p>
+                    {a.bodyAr && (
+                      <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--text-secondary)]">
+                        {a.bodyAr}
+                      </p>
+                    )}
+                    {a.imageUrl && (
+                      <a
+                        href={a.imageUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 block overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={a.imageUrl}
+                          alt={a.titleAr}
+                          className="block h-auto w-full max-w-full"
+                          loading="lazy"
+                        />
+                      </a>
+                    )}
                   </div>
                 </div>
               </li>

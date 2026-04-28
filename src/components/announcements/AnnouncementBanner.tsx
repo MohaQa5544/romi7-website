@@ -7,11 +7,12 @@ import { SEVERITY_META, type Severity } from "@/lib/announcements";
 type Props = {
   id: string;
   title: string;
-  body: string;
+  body: string | null;
+  imageUrl?: string | null;
   severity: Severity;
 };
 
-export function AnnouncementBanner({ id, title, body, severity }: Props) {
+export function AnnouncementBanner({ id, title, body, imageUrl, severity }: Props) {
   const [dismissed, setDismissed] = useState(true); // start dismissed to avoid SSR flicker
   const meta = SEVERITY_META[severity];
 
@@ -45,11 +46,29 @@ export function AnnouncementBanner({ id, title, body, severity }: Props) {
       className={`flex items-start gap-3 rounded-[var(--radius-lg)] border p-4 ${meta.container}`}
     >
       <Megaphone size={20} className={`mt-0.5 shrink-0 ${meta.iconColor}`} />
-      <div className="flex-1 space-y-1">
+      <div className="flex-1 space-y-1.5">
         <h2 className="font-display text-sm font-semibold text-[var(--text-primary)]">
           {title}
         </h2>
-        <p className="text-sm leading-relaxed text-[var(--text-secondary)]">{body}</p>
+        {body && (
+          <p className="text-sm leading-relaxed text-[var(--text-secondary)]">{body}</p>
+        )}
+        {imageUrl && (
+          <a
+            href={imageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 block overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={imageUrl}
+              alt={title}
+              className="block h-auto max-h-72 w-auto max-w-full"
+              loading="lazy"
+            />
+          </a>
+        )}
       </div>
       <button
         type="button"

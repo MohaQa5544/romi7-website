@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useActionState } from "react";
-import { Pencil, Plus, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState, useActionState } from "react";
+import Image from "next/image";
+import { Pencil, Plus, Loader2, ImagePlus, X } from "lucide-react";
 import {
   saveAnnouncement,
   type AnnouncementFormState,
@@ -11,7 +12,8 @@ import { DialogShell } from "./DialogShell";
 type Announcement = {
   id: string;
   titleAr: string;
-  bodyAr: string;
+  bodyAr: string | null;
+  imageUrl: string | null;
   severity: "info" | "success" | "warning" | "urgent";
   isPinned: boolean;
   isPublished: boolean;
@@ -26,9 +28,48 @@ export function AnnouncementDialog({ announcement, trigger = "add" }: Props) {
     null,
   );
 
+  // Image picker state — kept in React so we can show a live preview
+  // and let the admin remove an existing image without uploading a new one.
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pickedFile, setPickedFile] = useState<File | null>(null);
+  const [pickedPreview, setPickedPreview] = useState<string | null>(null);
+  const [removeExisting, setRemoveExisting] = useState(false);
+
   useEffect(() => {
-    if (state?.ok) setOpen(false);
+    if (state?.ok) {
+      setOpen(false);
+      setPickedFile(null);
+      setPickedPreview(null);
+      setRemoveExisting(false);
+    }
   }, [state]);
+
+  // Build/teardown an object URL for the picked file so the user sees a preview.
+  useEffect(() => {
+    if (!pickedFile) {
+      setPickedPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(pickedFile);
+    setPickedPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [pickedFile]);
+
+  function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] ?? null;
+    setPickedFile(f);
+    if (f) setRemoveExisting(false); // picking a new file overrides "remove"
+  }
+
+  function clearPicked() {
+    setPickedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  // What the user currently "sees" as the announcement's image:
+  const showingExisting =
+    !!announcement?.imageUrl && !pickedFile && !removeExisting;
+  const showingPicked = !!pickedPreview;
 
   const formId = "announcement-form";
 
@@ -77,17 +118,74 @@ export function AnnouncementDialog({ announcement, trigger = "add" }: Props) {
           </>
         }
       >
-        <form id={formId} action={action} className="space-y-4">
+        <form id={formId} action={action} className="space-y-4" encType="multipart/form-data">
           {announcement && <input type="hidden" name="id" value={announcement.id} />}
+          {removeExisting && <input type="hidden" name="removeImage" value="on" />}
 
           <Field label="العنوان" name="titleAr" defaultValue={announcement?.titleAr} />
           <Field
-            label="النصّ"
+            label="النصّ (اختياري — يمكن أن يكون الإعلان صورة فقط)"
             name="bodyAr"
             type="textarea"
-            defaultValue={announcement?.bodyAr}
+            defaultValue={announcement?.bodyAr ?? ""}
             rows={5}
           />
+
+          {/* Image picker */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-[var(--text-secondary)]">
+              صورة (اختيارية)
+            </label>
+
+            {(showingExisting || showingPicked) && (
+              <div className="relative inline-block max-w-full overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-default)] bg-[var(--surface-1)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={showingPicked ? pickedPreview! : announcement!.imageUrl!}
+                  alt="معاينة الصورة"
+                  className="block h-auto max-h-64 w-auto max-w-full"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (showingPicked) {
+                      clearPicked();
+                    } else {
+                      setRemoveExisting(true);
+                    }
+                  }}
+                  aria-label="إزالة الصورة"
+                  className="absolute end-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+                >
+                  <X size={14} />
+                </button>
+                {showingPicked && (
+                  <span className="absolute bottom-1.5 start-1.5 rounded-full bg-black/60 px-2 py-0.5 text-[10px] text-white">
+                    جديد — لم يُحفَظ بعد
+                  </span>
+                )}
+              </div>
+            )}
+
+            <label className="block">
+              <input
+                ref={fileInputRef}
+                type="file"
+                name="image"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                onChange={onPickFile}
+                className="hidden"
+              />
+              <span className="inline-flex cursor-pointer items-center gap-1.5 rounded-[var(--radius-default)] border border-dashed border-[var(--border-default)] bg-[var(--surface-0)] px-3 py-2 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--romi-gold)] hover:text-[var(--text-primary)]">
+                <ImagePlus size={14} />
+                {showingExisting || showingPicked ? "استبدال الصورة" : "إضافة صورة"}
+              </span>
+            </label>
+            <p className="text-[11px] text-[var(--text-muted)]">
+              JPG / PNG / WebP / GIF — الحد الأقصى 8 ميغا.
+            </p>
+          </div>
+
           <Field
             label="الأهمّيّة"
             name="severity"

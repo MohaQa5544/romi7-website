@@ -182,7 +182,10 @@ export const bookmarks = sqliteTable(
 export const announcements = sqliteTable("announcements", {
   id: text("id").primaryKey().$defaultFn(() => createId()),
   titleAr: text("title_ar").notNull(),
-  bodyAr: text("body_ar").notNull(),
+  /** Optional. An announcement may consist of text only, image only, or both. */
+  bodyAr: text("body_ar"),
+  /** Optional Vercel Blob URL of an attached image. */
+  imageUrl: text("image_url"),
   severity: text("severity", { enum: ["info", "success", "warning", "urgent"] })
     .notNull()
     .default("info"),

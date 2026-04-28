@@ -23,6 +23,7 @@ export async function PinnedHomeBanner() {
         id={pinned.id}
         title={pinned.titleAr}
         body={pinned.bodyAr}
+        imageUrl={pinned.imageUrl}
         severity={pinned.severity}
       />
     </div>
