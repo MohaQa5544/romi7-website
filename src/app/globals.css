@@ -345,3 +345,17 @@ h1, h2, h3, h4, h5, h6, .font-display {
   background: var(--romi-gold);
   color: var(--romi-navy);
 }
+
+/* ----------------------------------------------------------------------
+ * Top page-loading bar — flip its direction for our RTL layout so it
+ * fills from the right edge toward the left, matching the way Arabic
+ * readers expect motion to flow. nextjs-toploader animates the bar's
+ * inner element with translateX, which visually grows left→right by
+ * default; mirroring the wrapper with scaleX(-1) reverses that without
+ * touching the package internals.
+ * ---------------------------------------------------------------------- */
+#nprogress {
+  transform: scaleX(-1);
+  transform-origin: center top;
+}
+
