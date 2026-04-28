@@ -58,13 +58,13 @@ export function AnnouncementBanner({ id, title, body, imageUrl, severity }: Prop
             href={`/api/announcement-image/${id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1 block overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
+            className="mt-2 mx-auto block w-fit max-w-md overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`/api/announcement-image/${id}`}
               alt={title}
-              className="block h-auto max-h-72 w-auto max-w-full"
+              className="block h-auto max-h-[28rem] w-auto max-w-full object-contain"
               loading="lazy"
             />
           </a>

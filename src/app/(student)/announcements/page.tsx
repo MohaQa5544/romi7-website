@@ -66,13 +66,13 @@ export default async function AnnouncementsPage() {
                         href={`/api/announcement-image/${a.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-2 block overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
+                        className="mt-2 mx-auto block w-fit max-w-md overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={`/api/announcement-image/${a.id}`}
                           alt={a.titleAr}
-                          className="block h-auto w-full max-w-full"
+                          className="block h-auto max-h-[32rem] w-auto max-w-full object-contain"
                           loading="lazy"
                         />
                       </a>
