@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import NextTopLoader from "nextjs-toploader";
 import { readexPro, ibmPlexArabic, inter } from "@/lib/fonts";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { SITE } from "@/lib/constants";
@@ -43,6 +44,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${readexPro.variable} ${ibmPlexArabic.variable} ${inter.variable}`}
     >
       <body>
+        {/* Top progress bar shown during every client-side navigation —
+            same idea as the one YouTube/GitHub/Vercel use. Brand gold
+            so it sits naturally with the rest of the UI. */}
+        <NextTopLoader
+          color="#F5C518"
+          height={3}
+          showSpinner={false}
+          shadow="0 0 10px #F5C518, 0 0 5px #F5C518"
+          crawl
+          crawlSpeed={200}
+          speed={200}
+          easing="ease"
+          zIndex={9999}
+        />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
