@@ -141,7 +141,11 @@ export function AnnouncementDialog({ announcement, trigger = "add" }: Props) {
               <div className="relative inline-block max-w-full overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-default)] bg-[var(--surface-1)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={showingPicked ? pickedPreview! : announcement!.imageUrl!}
+                  src={
+                    showingPicked
+                      ? pickedPreview!
+                      : `/api/announcement-image/${announcement!.id}`
+                  }
                   alt="معاينة الصورة"
                   className="block h-auto max-h-64 w-auto max-w-full"
                 />

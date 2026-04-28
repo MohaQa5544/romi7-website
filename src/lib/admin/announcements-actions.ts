@@ -89,8 +89,11 @@ export async function saveAnnouncement(
     }
     try {
       const safeName = image.name.replace(/[^\w؀-ۿ.\-]+/g, "_") || "image";
+      // The Vercel Blob store on this project is configured as private,
+      // so we upload privately and serve the image through a public proxy
+      // route at /api/announcement-image/[id] which streams from the blob.
       const blob = await put(`announcements/${Date.now()}-${safeName}`, image, {
-        access: "public",
+        access: "private",
         contentType: image.type,
         addRandomSuffix: true,
       });

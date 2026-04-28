@@ -52,7 +52,7 @@ export default async function AdminAnnouncementsPage() {
                 <div className="flex flex-wrap items-start gap-4">
                   {a.imageUrl && (
                     <a
-                      href={a.imageUrl}
+                      href={`/api/announcement-image/${a.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block h-20 w-20 shrink-0 overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
@@ -60,7 +60,7 @@ export default async function AdminAnnouncementsPage() {
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={a.imageUrl}
+                        src={`/api/announcement-image/${a.id}`}
                         alt={a.titleAr}
                         className="block h-full w-full object-cover"
                         loading="lazy"

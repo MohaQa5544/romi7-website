@@ -63,14 +63,14 @@ export default async function AnnouncementsPage() {
                     )}
                     {a.imageUrl && (
                       <a
-                        href={a.imageUrl}
+                        href={`/api/announcement-image/${a.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-2 block overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={a.imageUrl}
+                          src={`/api/announcement-image/${a.id}`}
                           alt={a.titleAr}
                           className="block h-auto w-full max-w-full"
                           loading="lazy"

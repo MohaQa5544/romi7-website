@@ -55,14 +55,14 @@ export function AnnouncementBanner({ id, title, body, imageUrl, severity }: Prop
         )}
         {imageUrl && (
           <a
-            href={imageUrl}
+            href={`/api/announcement-image/${id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-1 block overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={imageUrl}
+              src={`/api/announcement-image/${id}`}
               alt={title}
               className="block h-auto max-h-72 w-auto max-w-full"
               loading="lazy"
