@@ -351,11 +351,24 @@ h1, h2, h3, h4, h5, h6, .font-display {
  * fills from the right edge toward the left, matching the way Arabic
  * readers expect motion to flow. nextjs-toploader animates the bar's
  * inner element with translateX, which visually grows left→right by
- * default; mirroring the wrapper with scaleX(-1) reverses that without
- * touching the package internals.
+ * default; mirroring the wrapper with scaleX(-1) reverses that.
+ *
+ * The transform on #nprogress turns it into the containing block for
+ * its position:fixed .bar child, so #nprogress itself must be fixed
+ * across the top of the viewport with explicit dimensions — otherwise
+ * the bar collapses to 0×0 and disappears.
  * ---------------------------------------------------------------------- */
 #nprogress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  pointer-events: none;
+  z-index: 9999;
   transform: scaleX(-1);
   transform-origin: center top;
+}
+#nprogress .bar {
+  width: 100%;
+  height: 100%;
 }
 
