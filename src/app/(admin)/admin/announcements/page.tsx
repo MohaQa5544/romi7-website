@@ -55,14 +55,14 @@ export default async function AdminAnnouncementsPage() {
                       href={`/api/announcement-image/${a.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block h-20 w-20 shrink-0 overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
+                      className="block h-20 w-20 shrink-0 overflow-hidden rounded-[var(--radius-default)]"
                       title="فتح الصورة بالحجم الكامل"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={`/api/announcement-image/${a.id}`}
                         alt={a.titleAr}
-                        className="block h-full w-full object-cover"
+                        className="block h-full w-full object-contain"
                         loading="lazy"
                       />
                     </a>

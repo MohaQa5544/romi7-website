@@ -66,7 +66,7 @@ export default async function AnnouncementsPage() {
                         href={`/api/announcement-image/${a.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-3 block overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-subtle)] bg-[var(--surface-0)]"
+                        className="mt-3 block overflow-hidden rounded-[var(--radius-default)]"
                         style={{ width: "fit-content", maxWidth: "260px" }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}

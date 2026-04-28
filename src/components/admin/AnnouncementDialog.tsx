@@ -138,7 +138,7 @@ export function AnnouncementDialog({ announcement, trigger = "add" }: Props) {
             </label>
 
             {(showingExisting || showingPicked) && (
-              <div className="relative inline-block max-w-full overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-default)] bg-[var(--surface-1)]">
+              <div className="relative inline-block max-w-full overflow-hidden rounded-[var(--radius-default)] border border-[var(--border-default)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={
