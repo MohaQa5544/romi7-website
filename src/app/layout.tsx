@@ -13,10 +13,8 @@ export const metadata: Metadata = {
   applicationName: SITE.name,
   authors: [{ name: SITE.teacherNameEn }],
   manifest: "/manifest.json",
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
+  // Favicon + apple-touch-icon are picked up automatically from
+  // src/app/icon.png and src/app/apple-icon.png via Next's file convention.
   openGraph: {
     type: "website",
     locale: "ar_QA",
