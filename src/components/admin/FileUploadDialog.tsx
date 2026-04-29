@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { Upload, Loader2, Youtube } from "lucide-react";
-import { uploadFile, addVideoLesson } from "@/lib/admin/files-actions";
+import { upload } from "@vercel/blob/client";
+import { addVideoLesson, registerUploadedFile } from "@/lib/admin/files-actions";
 import type { Unit } from "@/lib/db/schema";
 import { DialogShell } from "./DialogShell";
 
@@ -81,13 +82,46 @@ export function FileUploadDialog({ units, semesters }: Props) {
       return;
     }
 
-    fd.set("file", file);
+    // Read everything we need from the form BEFORE the async work — once
+    // the transition starts the synthetic event/FormData can be reset.
+    const titleAr = String(fd.get("titleAr") ?? "").trim();
+    const unitId = isMock ? null : String(fd.get("unitId") ?? "");
+    const semesterId = isMock ? String(fd.get("semesterId") ?? "") : null;
+    const examNumberRaw = String(fd.get("examNumber") ?? "").trim();
+    const safeName = file.name.replace(/[^\w؀-ۿ.\-]+/g, "_");
 
     start(async () => {
       try {
-        const result = await uploadFile(fd);
+        // Direct browser → Vercel Blob upload. Bypasses Vercel's 4.5 MB
+        // body limit on serverless functions because the file body never
+        // touches our server action.
+        const blob = await upload(`admin/${Date.now()}-${safeName}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/admin/blob-upload-token",
+          contentType: "application/pdf",
+          multipart: true,
+        });
+
+        // Now record the upload in the DB — this is a small JSON-only call.
+        const result = await registerUploadedFile({
+          unitId,
+          semesterId,
+          titleAr,
+          type: type as
+            | "question_bank"
+            | "answer_key"
+            | "exam"
+            | "exam_solution"
+            | "review"
+            | "video"
+            | "mock_exam"
+            | "mock_exam_solution",
+          examNumber: examNumberRaw ? Number(examNumberRaw) : null,
+          blobUrl: blob.url,
+          sizeBytes: file.size,
+        });
         if (!result.ok) {
-          setError(result.error ?? "فشل الرفع");
+          setError(result.error ?? "فشل حفظ بيانات الملف");
           return;
         }
         setOpen(false);
