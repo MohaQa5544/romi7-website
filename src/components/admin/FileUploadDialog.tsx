@@ -96,7 +96,10 @@ export function FileUploadDialog({ units, semesters }: Props) {
         // body limit on serverless functions because the file body never
         // touches our server action.
         const blob = await upload(`admin/${Date.now()}-${safeName}`, file, {
-          access: "public",
+          // The Vercel Blob store on this project is configured as private —
+          // passing "public" causes the upload to hang silently against the
+          // private store. Mirrors the existing put() call in uploadFile().
+          access: "private",
           handleUploadUrl: "/api/admin/blob-upload-token",
           contentType: "application/pdf",
           multipart: true,
